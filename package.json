@@ -1,0 +1,29 @@
+{
+  "name": "h2svd-loader",
+  "version": "1.0.0",
+  "description": "html to simple-virtual-dom",
+  "main": "index.js",
+  "dependencies": {
+    "htmlparser2": "^3.9.0",
+    "loader-utils": "^0.2.12",
+    "webpack": "^1.12.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vfasky/h2svd-loader.git"
+  },
+  "keywords": [
+    "simple-virtual-dom",
+    "JSX"
+  ],
+  "author": "vfasky@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vfasky/h2svd-loader/issues"
+  },
+  "homepage": "https://github.com/vfasky/h2svd-loader#readme"
+}
