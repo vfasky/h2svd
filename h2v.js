@@ -99,6 +99,7 @@ parseDom = function(dom, ix, id) {
   if (dom.name) {
     script += "\n" + (bNS(ix + 1)) + "tree.push( el('" + dom.name + "', attr, children_" + id + ") );";
   } else if (dom.type === 'text') {
+    dom.data = dom.data.replace(/\n/g, ' ');
     text = dom.data;
     if (text.indexOf('{') !== -1 && text.indexOf('}') !== -1) {
       code = text.replace(/\{/g, '" + (').replace(/\}/g, ') + "');

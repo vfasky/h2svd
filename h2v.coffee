@@ -120,10 +120,12 @@ parseDom = (dom, ix, id)->
     # 文本处理
     else if dom.type == 'text'
         # 解释 { xx }
+        dom.data = dom.data.replace /\n/g, ' '
         text = dom.data
         if text.indexOf('{') != -1 and text.indexOf('}') != -1
             code = text.replace /\{/g, '" + ('
                        .replace /\}/g, ') + "'
+
             code = '"' + code + '"'
             script += "\n#{bNS ix + 1}tree.push( #{code} );"
         else
