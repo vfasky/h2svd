@@ -49,7 +49,7 @@ parserAttrFor = (code, dom, ix, children)->
 #{bNS ix + 1}var #{_preNS}arr = #{_arr} || [];
 #{bNS ix + 1}for(var #{_ix}=0, len=#{_preNS}arr.length; #{_ix} < len; #{_ix}++){
 #{bNS ix + 1}    var children_for_#{fid} = [], attr = {};
-#{bNS ix + 1}    var #{_vName} = #{_preNS}_arr[#{_ix}];
+#{bNS ix + 1}    var #{_vName} = #{_preNS}arr[#{_ix}];
 #{bNS ix + 1}    #{parserAttr dom.attribs, ix}
 """
 
@@ -57,12 +57,18 @@ parserAttrFor = (code, dom, ix, children)->
     else if code.indexOf(' of ') != -1
         _key = code.split(' of ')[0]
         _obj = code.split(' of ').pop()
+        _val = '_'
+
+        if _key.indexOf(',') != -1
+            _val = _key.split(',').pop()
+            _key = _key.split(',')[0]
 
         script = """
 #{bNS ix + 1}// for
 #{bNS ix + 1}var #{_preNS}obj = #{_obj} || {};
 #{bNS ix + 1}for(var #{_key} in #{_preNS}obj){
 #{bNS ix + 1}    var children_for_#{fid} = [], attr = {};
+#{bNS ix + 1}    var #{_val} = #{_preNS}obj[#{_key}] || {};
 #{bNS ix + 1}    #{parserAttr dom.attribs, ix}
 """
 
@@ -164,7 +170,7 @@ domToScript = (tree)->
         return el('div', {'class': 'mc-vd'}, children_0);
     };
     """
-    console.log script
+    #console.log script
     script
 
     

@@ -33,7 +33,7 @@ bNS = function(len) {
  */
 
 parserAttrFor = function(code, dom, ix, children) {
-  var _arr, _ix, _key, _obj, _vName, fid, script;
+  var _arr, _ix, _key, _obj, _vName, _val, fid, script;
   fid = _forId++;
   delete dom.attribs['mc-for'];
   script = '';
@@ -44,11 +44,16 @@ parserAttrFor = function(code, dom, ix, children) {
     if (code.indexOf(',') !== -1) {
       _ix = code.split(',').pop().split(' in')[0].trim();
     }
-    script = (bNS(ix + 1)) + "// for\n" + (bNS(ix + 1)) + "var " + _preNS + "arr = " + _arr + " || [];\n" + (bNS(ix + 1)) + "for(var " + _ix + "=0, len=" + _preNS + "arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "    var children_for_" + fid + " = [], attr = {};\n" + (bNS(ix + 1)) + "    var " + _vName + " = " + _preNS + "_arr[" + _ix + "];\n" + (bNS(ix + 1)) + "    " + (parserAttr(dom.attribs, ix));
+    script = (bNS(ix + 1)) + "// for\n" + (bNS(ix + 1)) + "var " + _preNS + "arr = " + _arr + " || [];\n" + (bNS(ix + 1)) + "for(var " + _ix + "=0, len=" + _preNS + "arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "    var children_for_" + fid + " = [], attr = {};\n" + (bNS(ix + 1)) + "    var " + _vName + " = " + _preNS + "arr[" + _ix + "];\n" + (bNS(ix + 1)) + "    " + (parserAttr(dom.attribs, ix));
   } else if (code.indexOf(' of ') !== -1) {
     _key = code.split(' of ')[0];
     _obj = code.split(' of ').pop();
-    script = (bNS(ix + 1)) + "// for\n" + (bNS(ix + 1)) + "var " + _preNS + "obj = " + _obj + " || {};\n" + (bNS(ix + 1)) + "for(var " + _key + " in " + _preNS + "obj){\n" + (bNS(ix + 1)) + "    var children_for_" + fid + " = [], attr = {};\n" + (bNS(ix + 1)) + "    " + (parserAttr(dom.attribs, ix));
+    _val = '_';
+    if (_key.indexOf(',') !== -1) {
+      _val = _key.split(',').pop();
+      _key = _key.split(',')[0];
+    }
+    script = (bNS(ix + 1)) + "// for\n" + (bNS(ix + 1)) + "var " + _preNS + "obj = " + _obj + " || {};\n" + (bNS(ix + 1)) + "for(var " + _key + " in " + _preNS + "obj){\n" + (bNS(ix + 1)) + "    var children_for_" + fid + " = [], attr = {};\n" + (bNS(ix + 1)) + "    var " + _val + " = " + _preNS + "obj[" + _key + "] || {};\n" + (bNS(ix + 1)) + "    " + (parserAttr(dom.attribs, ix));
   }
   if (dom.children && dom.children.length > 0) {
     script += parseTree(dom.children, ix + 1, "children_for_" + fid);
@@ -135,7 +140,6 @@ domToScript = function(tree) {
   script = "var mcore = require('mcore');\nvar el = mcore.virtualDom.el;\n \nmodule.exports = function(scope){\n    var children_0 = [];";
   script += "\n    " + (parseTree(tree));
   script += "\n    return el('div', {'class': 'mc-vd'}, children_0);\n};";
-  console.log(script);
   return script;
 };
 
