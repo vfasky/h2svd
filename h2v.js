@@ -7,13 +7,17 @@
  * @link http://vfasky.com
  */
 'use strict';
-var _domId, _preNS, bNS, domToScript, htmlparser, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserFormatters;
+var _domId, _preNS, _signReg, _strEndReg, bNS, domToScript, htmlparser, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserFormatters;
 
 htmlparser = require('htmlparser2');
 
 _domId = 0;
 
 _preNS = '__mc__';
+
+_signReg = /\{([^}]+)\}/g;
+
+_strEndReg = /[^]+""$/;
 
 bNS = function(len) {
   var i;
@@ -119,6 +123,7 @@ parserAttr = function(attribs, ix) {
 
 parserFormatters = function(key, valName, ix) {
   var domVal, funcs, script;
+  key = key.trim();
   if (key.indexOf('|') === -1) {
     return (bNS(ix + 1)) + " " + valName + " = " + key + "; \n";
   }
@@ -138,7 +143,7 @@ parserFormatters = function(key, valName, ix) {
     });
     formatter = args[0];
     args[0] = 'x';
-    return script += (bNS(ix + 2)) + " // " + formatter + "\n" + (bNS(ix + 2)) + " if( formatters.hasOwnProperty('" + formatter + "') ) {\n" + (bNS(ix + 2)) + "     x = formatters." + formatter + "(" + (args.join(',')) + ");\n" + (bNS(ix + 2)) + " } // end " + formatter + " \n";
+    return script += (bNS(ix + 2)) + " // " + formatter + "\n" + (bNS(ix + 2)) + " if( formatters.hasOwnProperty('" + formatter + "') ) {\n" + (bNS(ix + 2)) + "     x = formatters['" + formatter + "'](" + (args.join(',')) + ");\n" + (bNS(ix + 2)) + " } // end " + formatter + " \n";
   });
   script += (bNS(ix + 2)) + " return x;\n" + (bNS(ix + 1)) + " })(" + domVal + ");\n";
   return script;
@@ -150,7 +155,7 @@ parserFormatters = function(key, valName, ix) {
  */
 
 parseDom = function(dom, ix) {
-  var attr, attrKeys, code, id, j, len1, script, text;
+  var attr, attrKeys, code, id, j, len1, mapTree, mapTreeId, script, text;
   id = _domId++;
   script = "\n" + (bNS(ix + 1)) + " var children_" + id + " = [], attr = {};\n";
   if (dom.attribs) {
@@ -180,9 +185,26 @@ parseDom = function(dom, ix) {
   } else if (dom.type === 'text') {
     dom.data = dom.data.replace(/\n/g, ' ');
     text = dom.data;
-    if (text.indexOf('{') !== -1 && text.indexOf('}') !== -1) {
-      code = text.replace(/\{/g, '" + (').replace(/\}/g, ') + "');
-      code = '"' + code + '"';
+    if (_signReg.test(text)) {
+      mapTree = [];
+      mapTreeId = 0;
+      code = text.replace(_signReg, function(key, val) {
+        var reKey;
+        reKey = _preNS + "rp__key_" + (mapTreeId++);
+        script += "\n" + (bNS(ix + 1)) + " var " + reKey + ";";
+        mapTree.push({
+          key: reKey,
+          val: val
+        });
+        return '" + ' + reKey + ' + "';
+      });
+      code = '"' + code;
+      if (false === _strEndReg.test(code)) {
+        code += '"';
+      }
+      mapTree.forEach(function(v) {
+        return script += "\n" + (parserFormatters(v.val, v.key, ix));
+      });
       script += "\n" + (bNS(ix + 1)) + " tree.push( " + code + " );";
     } else {
       script += "\n" + (bNS(ix + 1)) + " tree.push( '" + dom.data + "' );";
@@ -212,7 +234,7 @@ parseTree = function(tree, ix, children) {
 
 domToScript = function(tree) {
   var script;
-  script = "var mcore = require('mcore');\nvar el = mcore.virtualDom.el;\nvar formatters = mcore.Template.formatters;\n \nmodule.exports = function(scope){\n    var children_0 = [];";
+  script = "'use strict'\nvar mcore = require('mcore');\nvar el = mcore.virtualDom.el;\nvar formatters = mcore.Template.formatters;\n \nmodule.exports = function(scope){\n    var children_0 = [];";
   script += "\n    " + (parseTree(tree));
   script += "\n    return el('div', {'class': 'mc-vd'}, children_0);\n};";
   return script;

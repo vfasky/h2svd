@@ -14,6 +14,9 @@ _domId = 0
 # 生成的私有变量前缀
 _preNS = '__mc__'
 
+_signReg = /\{([^}]+)\}/g
+_strEndReg = /[^]+""$/
+
 # 构造空格
 bNS = (len)->
     ('' for i in [0 ... len * 4]).join ' '
@@ -155,6 +158,7 @@ parserAttr = (attribs, ix)->
 # 解释过滤函数
 # 'test' | toNumber | toFixed 2 =>
 parserFormatters = (key, valName, ix)->
+    key = key.trim()
     if key.indexOf('|') == -1
         return "#{bNS ix + 1} #{valName} = #{key}; \n"
 
@@ -180,7 +184,7 @@ parserFormatters = (key, valName, ix)->
         script += """
 #{bNS ix + 2} // #{formatter}
 #{bNS ix + 2} if( formatters.hasOwnProperty('#{formatter}') ) {
-#{bNS ix + 2}     x = formatters.#{formatter}(#{args.join(',')});
+#{bNS ix + 2}     x = formatters['#{formatter}'](#{args.join(',')});
 #{bNS ix + 2} } // end #{formatter} \n
 """
 
@@ -239,11 +243,30 @@ parseDom = (dom, ix)->
         # 解释 { xx }
         dom.data = dom.data.replace /\n/g, ' '
         text = dom.data
-        if text.indexOf('{') != -1 and text.indexOf('}') != -1
-            code = text.replace /\{/g, '" + ('
-                       .replace /\}/g, ') + "'
+        #if text.indexOf('{') != -1 and text.indexOf('}') != -1
+            #code = text.replace /\{/g, '" + ('
+            #           .replace /\}/g, ') + "'
+        if _signReg.test(text)
+            mapTree = []
+            mapTreeId = 0
+            code = text.replace _signReg, (key, val)->
+                reKey = "#{_preNS}rp__key_#{mapTreeId++}"
+                script += "\n#{bNS ix + 1} var #{reKey};"
 
-            code = '"' + code + '"'
+                mapTree.push
+                    key: reKey
+                    val: val
+
+                '" + '+ reKey + ' + "'
+
+            code = '"' + code
+            if false == _strEndReg.test(code)
+                code += '"'
+
+            mapTree.forEach (v)->
+                 script += "\n#{parserFormatters v.val, v.key, ix}"
+        
+            #console.log script
             
             script += "\n#{bNS ix + 1} tree.push( #{code} );"
         else
@@ -269,6 +292,7 @@ parseTree = (tree, ix=0, children='children_0')->
 # 将 dom 转成 js
 domToScript = (tree)->
     script = """
+    'use strict'
     var mcore = require('mcore');
     var el = mcore.virtualDom.el;
     var formatters = mcore.Template.formatters;
