@@ -7,13 +7,11 @@
  * @link http://vfasky.com
  */
 'use strict';
-var _domId, _preNS, _signReg, _strEndReg, bNS, domToScript, htmlparser, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserFormatters;
+var _domId, _signReg, _strEndReg, bNS, domToScript, htmlparser, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserBinders, parserFormatters;
 
 htmlparser = require('htmlparser2');
 
 _domId = 0;
-
-_preNS = '__mc__';
 
 _signReg = /\{([^}]+)\}/g;
 
@@ -39,10 +37,10 @@ bNS = function(len) {
 parserAttrEach = function(code, dom, ix, attrKey) {
   var _arr, _ix, _vName;
   delete dom.attribs[attrKey];
-  _ix = _preNS + '$ix_';
+  _ix = '__mc__$ix_';
   _arr = code;
   _vName = attrKey.replace('mc-each-', '');
-  return "\n" + (bNS(ix + 1)) + " // each " + attrKey + " = " + code + "\n" + (bNS(ix + 1)) + " var " + _preNS + "arr = " + _arr + " || [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=" + _preNS + "arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = " + _preNS + "arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endEach\n";
+  return "\n" + (bNS(ix + 1)) + " // each " + attrKey + " = " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr;\n" + (parserFormatters(_arr, '__mc__arr', ix)) + "\n" + (bNS(ix + 1)) + " __mc__arr = __mc__arr.length ? __mc__arr : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endEach\n";
 };
 
 
@@ -55,13 +53,13 @@ parserAttrFor = function(code, dom, ix) {
   delete dom.attribs['mc-for'];
   script = '';
   if (code.indexOf(' in ') !== -1) {
-    _ix = _preNS + '$ix_';
+    _ix = '__mc__$ix_';
     _arr = code.split(' in ').pop();
     _vName = code.split(' ')[0].replace(',', '');
     if (code.indexOf(',') !== -1) {
       _ix = code.split(',').pop().split(' in')[0].trim();
     }
-    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var " + _preNS + "arr = " + _arr + " || [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=" + _preNS + "arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = " + _preNS + "arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
+    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr = " + _arr + ".length ? " + _arr + " : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
   } else if (code.indexOf(' of ') !== -1) {
     _key = code.split(' of ')[0];
     _obj = code.split(' of ').pop();
@@ -70,7 +68,7 @@ parserAttrFor = function(code, dom, ix) {
       _val = _key.split(',').pop();
       _key = _key.split(',')[0];
     }
-    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var " + _preNS + "obj = " + _obj + " || {};\n" + (bNS(ix + 1)) + " for(var " + _key + " in " + _preNS + "obj){\n" + (bNS(ix + 1)) + "     var " + _val + " = " + _preNS + "obj[" + _key + "] || {};\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
+    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var __mc__obj = " + _obj + " || {};\n" + (bNS(ix + 1)) + " for(var " + _key + " in __mc__obj){\n" + (bNS(ix + 1)) + "     var " + _val + " = __mc__obj[" + _key + "] || {};\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
   }
   return script += (bNS(ix + 1)) + " } // endFor \n";
 };
@@ -99,6 +97,11 @@ parserAttrUnless = function(code, dom, ix) {
   return script = "\n" + (bNS(ix + 1)) + " // if " + code + "\n" + (bNS(ix + 1)) + " if( !(" + code + ") ){\n" + (bNS(ix + 1)) + "    " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endif \n";
 };
 
+parserBinders = function(sKey, sVal, ix) {
+  var script;
+  return script = (bNS(ix + 1)) + " // binders check\n" + (bNS(ix + 1)) + " if( __mc_T_binders.hasOwnProperty('" + sKey + "') ){\n" + (bNS(ix + 1)) + "    __mc__isBindObserve = true;\n" + (bNS(ix + 1)) + "    __mc__binders['" + sKey + "'] = __mc__binders['" + sKey + "'] || [];\n" + (bNS(ix + 1)) + "    __mc__attr['_mc_b_id'] = __mc__dom_id++;\n" + (bNS(ix + 1)) + "    __mc__binders['" + sKey + "'].push({id: __mc__attr['_mc_b_id'], attr: '_mc_b_id', val: __mc__attr['" + sKey + "']});\n" + (bNS(ix + 1)) + "    delete __mc__attr['" + sKey + "'];\n" + (bNS(ix + 1)) + " }// endif \n";
+};
+
 
 /* 
  * 解释属性
@@ -113,9 +116,10 @@ parserAttr = function(attribs, ix) {
     val = attribs[key];
     if (key.indexOf('mc-') === 0) {
       key = key.replace('mc-', '');
-      return script += "" + (parserFormatters(val, "attr['" + key + "']", ix));
+      script += "" + (parserFormatters(val, "__mc__attr['" + key + "']", ix));
+      return script += "" + (parserBinders(key, ix));
     } else {
-      return script += (bNS(ix + 1)) + " attr['" + key + "'] = '" + val + "';";
+      return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
     }
   });
   return script + '\n';
@@ -143,7 +147,7 @@ parserFormatters = function(key, valName, ix) {
     });
     formatter = args[0];
     args[0] = 'x';
-    return script += (bNS(ix + 2)) + " // " + formatter + "\n" + (bNS(ix + 2)) + " if( formatters.hasOwnProperty('" + formatter + "') ) {\n" + (bNS(ix + 2)) + "     x = formatters['" + formatter + "'](" + (args.join(',')) + ");\n" + (bNS(ix + 2)) + " } // end " + formatter + " \n";
+    return script += (bNS(ix + 2)) + " // " + formatter + "\n" + (bNS(ix + 2)) + " if( __mc_T_formatters.hasOwnProperty('" + formatter + "') ) {\n" + (bNS(ix + 2)) + "     x = __mc_T_formatters['" + formatter + "'](" + (args.join(',')) + ");\n" + (bNS(ix + 2)) + " } // end " + formatter + " \n";
   });
   script += (bNS(ix + 2)) + " return x;\n" + (bNS(ix + 1)) + " })(" + domVal + ");\n";
   return script;
@@ -157,7 +161,7 @@ parserFormatters = function(key, valName, ix) {
 parseDom = function(dom, ix) {
   var attr, attrKeys, code, id, j, len1, mapTree, mapTreeId, script, text;
   id = _domId++;
-  script = "\n" + (bNS(ix + 1)) + " var children_" + id + " = [], attr = {};\n";
+  script = "\n" + (bNS(ix + 1)) + " var __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false;\n";
   if (dom.attribs) {
     if (dom.attribs['mc-for']) {
       return parserAttrFor(dom.attribs['mc-for'], dom, ix);
@@ -178,10 +182,12 @@ parseDom = function(dom, ix) {
     script += parserAttr(dom.attribs, ix);
   }
   if (dom.children && dom.children.length > 0) {
-    script += parseTree(dom.children, ix, "children_" + id);
+    script += parseTree(dom.children, ix, "__mc__children_" + id);
   }
   if (dom.name) {
-    script += "\n" + (bNS(ix + 1)) + " tree.push( el('" + dom.name + "', attr, children_" + id + ") );";
+    script += "\n" + (bNS(ix + 1)) + " var __mc__new_el = new __mc_T_el('" + dom.name + "', __mc__attr, __mc__children_" + id + ");";
+    script += "\n" + (bNS(ix + 1)) + " if(__mc__isBindObserve){ __mc__new_el.bindObserve(__mc__observe); }";
+    script += "\n" + (bNS(ix + 1)) + " tree.push( __mc__new_el );";
   } else if (dom.type === 'text') {
     dom.data = dom.data.replace(/\n/g, ' ');
     text = dom.data;
@@ -190,7 +196,7 @@ parseDom = function(dom, ix) {
       mapTreeId = 0;
       code = text.replace(_signReg, function(key, val) {
         var reKey;
-        reKey = _preNS + "rp__key_" + (mapTreeId++);
+        reKey = "__mc__rp__key_" + (mapTreeId++);
         script += "\n" + (bNS(ix + 1)) + " var " + reKey + ";";
         mapTree.push({
           key: reKey,
@@ -219,7 +225,7 @@ parseTree = function(tree, ix, children) {
     ix = 0;
   }
   if (children == null) {
-    children = 'children_0';
+    children = '__mc__children_0';
   }
   treeId = _domId;
   script = "\n" + (bNS(ix + 1)) + " (function(scope, tree){ // startTree " + treeId + "\n";
@@ -234,9 +240,9 @@ parseTree = function(tree, ix, children) {
 
 domToScript = function(tree) {
   var script;
-  script = "'use strict'\nvar mcore = require('mcore');\nvar el = mcore.virtualDom.el;\nvar formatters = mcore.Template.formatters;\n \nmodule.exports = function(scope){\n    var children_0 = [];";
+  script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_el = mcore.virtualDom.el;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
   script += "\n    " + (parseTree(tree));
-  script += "\n    return el('div', {'class': 'mc-vd'}, children_0);\n};";
+  script += "\n    return {\n        virtualDom: new __mc_T_el('div', {'class': 'mc-vd'}, __mc__children_0),\n        binders: __mc__binders,\n    }\n};";
   return script;
 };
 

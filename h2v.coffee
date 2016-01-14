@@ -11,9 +11,6 @@ htmlparser = require 'htmlparser2'
 # dom id
 _domId = 0
 
-# 生成的私有变量前缀
-_preNS = '__mc__'
-
 _signReg = /\{([^}]+)\}/g
 _strEndReg = /[^]+""$/
 
@@ -29,7 +26,7 @@ parserAttrEach = (code, dom, ix, attrKey)->
     delete dom.attribs[attrKey]
 
     # 数组key变量名
-    _ix =  _preNS + '$ix_'
+    _ix =  '__mc__$ix_'
     # 取数组变量名
     _arr = code
 
@@ -39,9 +36,11 @@ parserAttrEach = (code, dom, ix, attrKey)->
     """
 
 #{bNS ix + 1} // each #{attrKey} = #{code}
-#{bNS ix + 1} var #{_preNS}arr = #{_arr} || [];
-#{bNS ix + 1} for(var #{_ix}=0, len=#{_preNS}arr.length; #{_ix} < len; #{_ix}++){
-#{bNS ix + 1}     var #{_vName} = #{_preNS}arr[#{_ix}];
+#{bNS ix + 1} var __mc__arr;
+#{parserFormatters _arr, '__mc__arr', ix}
+#{bNS ix + 1} __mc__arr = __mc__arr.length ? __mc__arr : [];
+#{bNS ix + 1} for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
+#{bNS ix + 1}     var #{_vName} = __mc__arr[#{_ix}];
 #{bNS ix + 1}     #{parseDom dom, ix + 1}
 #{bNS ix + 1} }// endEach
 
@@ -61,7 +60,7 @@ parserAttrFor = (code, dom, ix)->
     # Array for
     if code.indexOf(' in ') != -1
         # 数组key变量名
-        _ix =  _preNS + '$ix_'
+        _ix = '__mc__$ix_'
 
         # 取数组变量名
         _arr = code.split(' in ').pop()
@@ -76,9 +75,9 @@ parserAttrFor = (code, dom, ix)->
         script = """
 
 #{bNS ix + 1} // for #{code}
-#{bNS ix + 1} var #{_preNS}arr = #{_arr} || [];
-#{bNS ix + 1} for(var #{_ix}=0, len=#{_preNS}arr.length; #{_ix} < len; #{_ix}++){
-#{bNS ix + 1}     var #{_vName} = #{_preNS}arr[#{_ix}];
+#{bNS ix + 1} var __mc__arr = #{_arr}.length ? #{_arr} : [];
+#{bNS ix + 1} for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
+#{bNS ix + 1}     var #{_vName} = __mc__arr[#{_ix}];
 #{bNS ix + 1}     #{parseDom dom, ix + 1}
 
 """
@@ -96,9 +95,9 @@ parserAttrFor = (code, dom, ix)->
         script = """
 
 #{bNS ix + 1} // for #{code}
-#{bNS ix + 1} var #{_preNS}obj = #{_obj} || {};
-#{bNS ix + 1} for(var #{_key} in #{_preNS}obj){
-#{bNS ix + 1}     var #{_val} = #{_preNS}obj[#{_key}] || {};
+#{bNS ix + 1} var __mc__obj = #{_obj} || {};
+#{bNS ix + 1} for(var #{_key} in __mc__obj){
+#{bNS ix + 1}     var #{_val} = __mc__obj[#{_key}] || {};
 #{bNS ix + 1}     #{parseDom dom, ix + 1}
 
 """
@@ -133,6 +132,19 @@ parserAttrUnless = (code, dom, ix)->
 #{bNS ix + 1}    #{parseDom dom, ix + 1}
 #{bNS ix + 1} }// endif \n"""
 
+# 解释属性绑定
+parserBinders = (sKey, sVal, ix)->
+    script = """
+#{bNS ix + 1} // binders check
+#{bNS ix + 1} if( __mc_T_binders.hasOwnProperty('#{sKey}') ){
+#{bNS ix + 1}    __mc__isBindObserve = true;
+#{bNS ix + 1}    __mc__binders['#{sKey}'] = __mc__binders['#{sKey}'] || [];
+#{bNS ix + 1}    __mc__attr['_mc_b_id'] = __mc__dom_id++;
+#{bNS ix + 1}    __mc__binders['#{sKey}'].push({id: __mc__attr['_mc_b_id'], attr: '_mc_b_id', val: __mc__attr['#{sKey}']});
+#{bNS ix + 1}    delete __mc__attr['#{sKey}'];
+#{bNS ix + 1} }// endif \n"""
+
+
 
 ### 
 # 解释属性
@@ -148,10 +160,10 @@ parserAttr = (attribs, ix)->
 
             #parserFormatters dom.attribs[attr]
 
-            script += "#{parserFormatters val, "attr['#{key}']", ix}"
-            #script += "#{bNS ix + 1} attr['#{key}'] = #{val};"
+            script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
+            script += "#{parserBinders key, ix}"
         else
-            script += "#{bNS ix + 1} attr['#{key}'] = '#{val}';"
+            script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
             
     script + '\n'
 
@@ -183,8 +195,8 @@ parserFormatters = (key, valName, ix)->
 
         script += """
 #{bNS ix + 2} // #{formatter}
-#{bNS ix + 2} if( formatters.hasOwnProperty('#{formatter}') ) {
-#{bNS ix + 2}     x = formatters['#{formatter}'](#{args.join(',')});
+#{bNS ix + 2} if( __mc_T_formatters.hasOwnProperty('#{formatter}') ) {
+#{bNS ix + 2}     x = __mc_T_formatters['#{formatter}'](#{args.join(',')});
 #{bNS ix + 2} } // end #{formatter} \n
 """
 
@@ -204,7 +216,7 @@ parserFormatters = (key, valName, ix)->
 ###
 parseDom = (dom, ix)->
     id = _domId++
-    script = "\n#{bNS ix + 1} var children_#{id} = [], attr = {};\n"
+    script = "\n#{bNS ix + 1} var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false;\n"
     
     if dom.attribs
         # 解释 for
@@ -233,11 +245,13 @@ parseDom = (dom, ix)->
 
     # 子元素
     if dom.children and dom.children.length > 0
-        script += parseTree dom.children, ix, "children_#{id}"
+        script += parseTree dom.children, ix, "__mc__children_#{id}"
 
     # tag 处理 ? 自定义组件处理
     if dom.name
-        script += "\n#{bNS ix + 1} tree.push( el('#{dom.name}', attr, children_#{id}) );"
+        script += "\n#{bNS ix + 1} var __mc__new_el = new __mc_T_el('#{dom.name}', __mc__attr, __mc__children_#{id});"
+        script += "\n#{bNS ix + 1} if(__mc__isBindObserve){ __mc__new_el.bindObserve(__mc__observe); }"
+        script += "\n#{bNS ix + 1} tree.push( __mc__new_el );"
     # 文本处理
     else if dom.type == 'text'
         # 解释 { xx }
@@ -250,7 +264,7 @@ parseDom = (dom, ix)->
             mapTree = []
             mapTreeId = 0
             code = text.replace _signReg, (key, val)->
-                reKey = "#{_preNS}rp__key_#{mapTreeId++}"
+                reKey = "__mc__rp__key_#{mapTreeId++}"
                 script += "\n#{bNS ix + 1} var #{reKey};"
 
                 mapTree.push
@@ -276,7 +290,7 @@ parseDom = (dom, ix)->
 
 
 # 解释 dom tree
-parseTree = (tree, ix=0, children='children_0')->
+parseTree = (tree, ix=0, children='__mc__children_0')->
     treeId = _domId
     script = "\n#{bNS ix + 1} (function(scope, tree){ // startTree #{treeId}\n"
 
@@ -294,18 +308,24 @@ domToScript = (tree)->
     script = """
     'use strict'
     var mcore = require('mcore');
-    var el = mcore.virtualDom.el;
-    var formatters = mcore.Template.formatters;
+    var __mc_T_el = mcore.virtualDom.el;
+    var __mc_T_formatters = mcore.Template.formatters;
+    var __mc_T_binders = mcore.Template.binders;
  
-    module.exports = function(scope){
-        var children_0 = [];
+    module.exports = function(scope, __mc__observe){
+        var __mc__children_0 = [];
+        var __mc__binders = {};
+        var __mc__dom_id = 0;
     """
 
     script += "\n    #{parseTree tree}"
 
     script += """
     
-        return el('div', {'class': 'mc-vd'}, children_0);
+        return {
+            virtualDom: new __mc_T_el('div', {'class': 'mc-vd'}, __mc__children_0),
+            binders: __mc__binders,
+        }
     };
     """
     #console.log script
