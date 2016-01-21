@@ -132,19 +132,6 @@ parserAttrUnless = (code, dom, ix)->
 #{bNS ix + 1}    #{parseDom dom, ix + 1}
 #{bNS ix + 1} }// endif \n"""
 
-# 解释属性绑定
-parserBinders = (sKey, sVal, ix)->
-    script = """
-#{bNS ix + 1} // binders check
-#{bNS ix + 1} if( __mc_T_binders.hasOwnProperty('#{sKey}') ){
-#{bNS ix + 1}    __mc__isBindObserve = true;
-#{bNS ix + 1}    __mc__binders['#{sKey}'] = __mc__binders['#{sKey}'] || [];
-#{bNS ix + 1}    __mc__attr['_mc_b_id'] = __mc__dom_id++;
-#{bNS ix + 1}    __mc__binders['#{sKey}'].push({id: __mc__attr['_mc_b_id'], attr: '_mc_b_id', val: __mc__attr['#{sKey}']});
-#{bNS ix + 1}    delete __mc__attr['#{sKey}'];
-#{bNS ix + 1} }// endif \n"""
-
-
 
 ### 
 # 解释属性
@@ -157,11 +144,13 @@ parserAttr = (attribs, ix)->
         val = attribs[key]
         if key.indexOf('mc-') == 0
             key = key.replace 'mc-', ''
+            if key.indexOf('on-') == 0
+                script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
+            else
+                #parserFormatters dom.attribs[attr]
 
-            #parserFormatters dom.attribs[attr]
-
-            script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
-            script += "#{parserBinders key, ix}"
+                script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
+                script += "#{parserBinders key, ix}"
         else
             script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
             
@@ -210,13 +199,25 @@ parserFormatters = (key, valName, ix)->
     #console.log script
 
     script
+
+# 解释属性绑定
+parserBinders = (sKey, sVal, ix)->
+    script = """
+#{bNS ix + 1} // binders check
+#{bNS ix + 1} if( __mc_T_binders.hasOwnProperty('#{sKey}') ){
+#{bNS ix + 1}    __mc__isBindObserve = true;
+#{bNS ix + 1}    __mc__binderData.push({attrName: '#{sKey}', value: __mc__attr['#{sKey}']});
+#{bNS ix + 1} }// end \n"""
+
+
+
     
 ###
 # 解释dom结构
 ###
 parseDom = (dom, ix)->
     id = _domId++
-    script = "\n#{bNS ix + 1} var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false;\n"
+    script = "\n#{bNS ix + 1} var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n"
     
     if dom.attribs
         # 解释 for
@@ -247,10 +248,23 @@ parseDom = (dom, ix)->
     if dom.children and dom.children.length > 0
         script += parseTree dom.children, ix, "__mc__children_#{id}"
 
-    # tag 处理 ? 自定义组件处理
+    # tag 处理, 自定义组件处理
     if dom.name
-        script += "\n#{bNS ix + 1} var __mc__new_el = new __mc_T_el('#{dom.name}', __mc__attr, __mc__children_#{id});"
-        script += "\n#{bNS ix + 1} if(__mc__isBindObserve){ __mc__new_el.bindObserve(__mc__observe); }"
+        script += "\n#{bNS ix + 1} var __mc__new_el = new __mc_T_El('#{dom.name}', __mc__attr, __mc__children_#{id});"
+        script += """
+#{bNS ix + 1} var __mc__attr__keys = Object.keys(__mc__attr);
+#{bNS ix + 1} __mc__attr__keys.forEach(function(attr){
+#{bNS ix + 1}     if(attr.indexOf('on-') === 0){ __mc__isBindObserve = true; }
+#{bNS ix + 1} });
+#{bNS ix + 1} if(__mc__isBindObserve){
+#{bNS ix + 1}     __mc__new_el.bindTemplate(__mc__observe); 
+#{bNS ix + 1}     for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ 
+#{bNS ix + 1}         var __mc_v = __mc__binderData[__mc_i];
+#{bNS ix + 1}         __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);
+#{bNS ix + 1}     }
+#{bNS ix + 1} }
+
+"""
         script += "\n#{bNS ix + 1} tree.push( __mc__new_el );"
     # 文本处理
     else if dom.type == 'text'
@@ -308,7 +322,7 @@ domToScript = (tree)->
     script = """
     'use strict'
     var mcore = require('mcore');
-    var __mc_T_el = mcore.virtualDom.el;
+    var __mc_T_El = mcore.virtualDom.Element;
     var __mc_T_formatters = mcore.Template.formatters;
     var __mc_T_binders = mcore.Template.binders;
  
@@ -323,7 +337,7 @@ domToScript = (tree)->
     script += """
     
         return {
-            virtualDom: new __mc_T_el('div', {'class': 'mc-vd'}, __mc__children_0),
+            virtualDom: new __mc_T_El('div', {'class': 'mc-vd'}, __mc__children_0),
             binders: __mc__binders,
         }
     };

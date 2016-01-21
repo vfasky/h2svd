@@ -97,11 +97,6 @@ parserAttrUnless = function(code, dom, ix) {
   return script = "\n" + (bNS(ix + 1)) + " // if " + code + "\n" + (bNS(ix + 1)) + " if( !(" + code + ") ){\n" + (bNS(ix + 1)) + "    " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endif \n";
 };
 
-parserBinders = function(sKey, sVal, ix) {
-  var script;
-  return script = (bNS(ix + 1)) + " // binders check\n" + (bNS(ix + 1)) + " if( __mc_T_binders.hasOwnProperty('" + sKey + "') ){\n" + (bNS(ix + 1)) + "    __mc__isBindObserve = true;\n" + (bNS(ix + 1)) + "    __mc__binders['" + sKey + "'] = __mc__binders['" + sKey + "'] || [];\n" + (bNS(ix + 1)) + "    __mc__attr['_mc_b_id'] = __mc__dom_id++;\n" + (bNS(ix + 1)) + "    __mc__binders['" + sKey + "'].push({id: __mc__attr['_mc_b_id'], attr: '_mc_b_id', val: __mc__attr['" + sKey + "']});\n" + (bNS(ix + 1)) + "    delete __mc__attr['" + sKey + "'];\n" + (bNS(ix + 1)) + " }// endif \n";
-};
-
 
 /* 
  * 解释属性
@@ -116,8 +111,12 @@ parserAttr = function(attribs, ix) {
     val = attribs[key];
     if (key.indexOf('mc-') === 0) {
       key = key.replace('mc-', '');
-      script += "" + (parserFormatters(val, "__mc__attr['" + key + "']", ix));
-      return script += "" + (parserBinders(key, ix));
+      if (key.indexOf('on-') === 0) {
+        return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
+      } else {
+        script += "" + (parserFormatters(val, "__mc__attr['" + key + "']", ix));
+        return script += "" + (parserBinders(key, ix));
+      }
     } else {
       return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
     }
@@ -153,6 +152,11 @@ parserFormatters = function(key, valName, ix) {
   return script;
 };
 
+parserBinders = function(sKey, sVal, ix) {
+  var script;
+  return script = (bNS(ix + 1)) + " // binders check\n" + (bNS(ix + 1)) + " if( __mc_T_binders.hasOwnProperty('" + sKey + "') ){\n" + (bNS(ix + 1)) + "    __mc__isBindObserve = true;\n" + (bNS(ix + 1)) + "    __mc__binderData.push({attrName: '" + sKey + "', value: __mc__attr['" + sKey + "']});\n" + (bNS(ix + 1)) + " }// end \n";
+};
+
 
 /*
  * 解释dom结构
@@ -161,7 +165,7 @@ parserFormatters = function(key, valName, ix) {
 parseDom = function(dom, ix) {
   var attr, attrKeys, code, id, j, len1, mapTree, mapTreeId, script, text;
   id = _domId++;
-  script = "\n" + (bNS(ix + 1)) + " var __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false;\n";
+  script = "\n" + (bNS(ix + 1)) + " var __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n";
   if (dom.attribs) {
     if (dom.attribs['mc-for']) {
       return parserAttrFor(dom.attribs['mc-for'], dom, ix);
@@ -185,8 +189,8 @@ parseDom = function(dom, ix) {
     script += parseTree(dom.children, ix, "__mc__children_" + id);
   }
   if (dom.name) {
-    script += "\n" + (bNS(ix + 1)) + " var __mc__new_el = new __mc_T_el('" + dom.name + "', __mc__attr, __mc__children_" + id + ");";
-    script += "\n" + (bNS(ix + 1)) + " if(__mc__isBindObserve){ __mc__new_el.bindObserve(__mc__observe); }";
+    script += "\n" + (bNS(ix + 1)) + " var __mc__new_el = new __mc_T_El('" + dom.name + "', __mc__attr, __mc__children_" + id + ");";
+    script += (bNS(ix + 1)) + " var __mc__attr__keys = Object.keys(__mc__attr);\n" + (bNS(ix + 1)) + " __mc__attr__keys.forEach(function(attr){\n" + (bNS(ix + 1)) + "     if(attr.indexOf('on-') === 0){ __mc__isBindObserve = true; }\n" + (bNS(ix + 1)) + " });\n" + (bNS(ix + 1)) + " if(__mc__isBindObserve){\n" + (bNS(ix + 1)) + "     __mc__new_el.bindTemplate(__mc__observe); \n" + (bNS(ix + 1)) + "     for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ \n" + (bNS(ix + 1)) + "         var __mc_v = __mc__binderData[__mc_i];\n" + (bNS(ix + 1)) + "         __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);\n" + (bNS(ix + 1)) + "     }\n" + (bNS(ix + 1)) + " }\n";
     script += "\n" + (bNS(ix + 1)) + " tree.push( __mc__new_el );";
   } else if (dom.type === 'text') {
     dom.data = dom.data.replace(/\n/g, ' ');
@@ -240,9 +244,9 @@ parseTree = function(tree, ix, children) {
 
 domToScript = function(tree) {
   var script;
-  script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_el = mcore.virtualDom.el;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
+  script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_El = mcore.virtualDom.Element;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
   script += "\n    " + (parseTree(tree));
-  script += "\n    return {\n        virtualDom: new __mc_T_el('div', {'class': 'mc-vd'}, __mc__children_0),\n        binders: __mc__binders,\n    }\n};";
+  script += "\n    return {\n        virtualDom: new __mc_T_El('div', {'class': 'mc-vd'}, __mc__children_0),\n        binders: __mc__binders,\n    }\n};";
   return script;
 };
 
