@@ -349,9 +349,15 @@ domToScript = (tree)->
     script += "\n    #{parseTree tree}"
 
     script += """
+        if(__mc__children_0.length === 1 && __mc__children_0[0].render){
+            var virtualDom = __mc__children_0[0];
+        }
+        else{
+            var virtualDom = new __mc_T_El( 'mc-vd', {}, __mc__children_0 );
+        }
     
         var templateDefined = {
-            'virtualDom': new __mc_T_El( 'div', {'class': 'mc-vd'}, __mc__children_0 ),
+            'virtualDom': virtualDom,
             'binders': __mc__binders
         };
         return templateDefined;

@@ -272,7 +272,7 @@ domToScript = function(tree) {
   var script;
   script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_El = mcore.virtualDom.Element;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\nvar objectKeys = mcore.util.objectKeys;\nvar each = mcore.util.each;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
   script += "\n    " + (parseTree(tree));
-  script += "\n    var templateDefined = {\n        'virtualDom': new __mc_T_El( 'div', {'class': 'mc-vd'}, __mc__children_0 ),\n        'binders': __mc__binders\n    };\n    return templateDefined;\n};";
+  script += "    if(__mc__children_0.length === 1 && __mc__children_0[0].render){\n        var virtualDom = __mc__children_0[0];\n    }\n    else{\n        var virtualDom = new __mc_T_El( 'mc-vd', {}, __mc__children_0 );\n    }\n\n    var templateDefined = {\n        'virtualDom': virtualDom,\n        'binders': __mc__binders\n    };\n    return templateDefined;\n};";
   return script;
 };
 
