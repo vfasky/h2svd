@@ -1,6 +1,6 @@
 {
   "name": "h2svd-loader",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "html to simple-virtual-dom",
   "main": "index.js",
   "dependencies": {
@@ -18,7 +18,8 @@
   },
   "keywords": [
     "simple-virtual-dom",
-    "JSX"
+    "JSX",
+    "mcore"
   ],
   "author": "vfasky@gmail.com",
   "license": "MIT",

@@ -14,6 +14,18 @@ _domId = 0
 _signReg = /\{([^}]+)\}/g
 _strEndReg = /[^]+""$/
 
+objectKeys = (obj = {})->
+    return Object.keys(obj) if Object.keys
+    keys = []
+    for key of obj
+        keys.push key
+    keys
+
+each = (arr, done)->
+    for v, k in arr
+        res = done v, k
+        return if false == res
+
 # 构造空格
 bNS = (len)->
     ('' for i in [0 ... len * 4]).join ' '
@@ -139,8 +151,8 @@ parserAttrUnless = (code, dom, ix)->
 parserAttr = (attribs, ix)->
     script = ''
     
-    attr = Object.keys attribs
-    attr.forEach (key)->
+    attr = objectKeys attribs
+    each attr, (key)->
         val = attribs[key]
         if key.indexOf('mc-') == 0
             key = key.replace 'mc-', ''
@@ -173,9 +185,9 @@ parserFormatters = (key, valName, ix)->
     
 """
 
-    funcs.forEach (fun)->
+    each funcs, (fun)->
         args = []
-        fun.split(' ').forEach (v)->
+        each fun.split(' '), (v)->
             val = v.trim()
             args.push val if val.length > 0
 
@@ -232,7 +244,7 @@ parseDom = (dom, ix)->
         if dom.attribs['mc-unless']
             return parserAttrUnless dom.attribs['mc-unless'], dom, ix
         
-        attrKeys = Object.keys dom.attribs
+        attrKeys = objectKeys dom.attribs
 
         # 解释 each-[x]
         for attr in attrKeys
@@ -252,8 +264,8 @@ parseDom = (dom, ix)->
     if dom.name
         script += "\n#{bNS ix + 1} var __mc__new_el = new __mc_T_El('#{dom.name}', __mc__attr, __mc__children_#{id});"
         script += """
-#{bNS ix + 1} var __mc__attr__keys = Object.keys(__mc__attr);
-#{bNS ix + 1} __mc__attr__keys.forEach(function(attr){
+#{bNS ix + 1} var __mc__attr__keys = objectKeys(__mc__attr);
+#{bNS ix + 1} each(__mc__attr__keys, function(attr){
 #{bNS ix + 1}     if(attr.indexOf('on-') === 0){ __mc__isBindObserve = true; }
 #{bNS ix + 1} });
 #{bNS ix + 1} if(__mc__isBindObserve){
@@ -291,7 +303,7 @@ parseDom = (dom, ix)->
             if false == _strEndReg.test(code)
                 code += '"'
 
-            mapTree.forEach (v)->
+            each mapTree, (v)->
                  script += "\n#{parserFormatters v.val, v.key, ix}"
         
             #console.log script
@@ -308,7 +320,7 @@ parseTree = (tree, ix=0, children='__mc__children_0')->
     treeId = _domId
     script = "\n#{bNS ix + 1} (function(scope, tree){ // startTree #{treeId}\n"
 
-    tree.forEach (dom, id)->
+    each tree, (dom, id)->
         # 过滤空行
         if dom.type != 'text' or (dom.type == 'text' and dom.data.trim().length > 0)
             script += "#{parseDom dom, ix + 1}"
@@ -325,6 +337,8 @@ domToScript = (tree)->
     var __mc_T_El = mcore.virtualDom.Element;
     var __mc_T_formatters = mcore.Template.formatters;
     var __mc_T_binders = mcore.Template.binders;
+    var objectKeys = mcore.util.objectKeys;
+    var each = mcore.util.each;
  
     module.exports = function(scope, __mc__observe){
         var __mc__children_0 = [];
@@ -336,10 +350,11 @@ domToScript = (tree)->
 
     script += """
     
-        return {
-            virtualDom: new __mc_T_El('div', {'class': 'mc-vd'}, __mc__children_0),
-            binders: __mc__binders,
-        }
+        var templateDefined = {
+            'virtualDom': new __mc_T_El( 'div', {'class': 'mc-vd'}, __mc__children_0 ),
+            'binders': __mc__binders
+        };
+        return templateDefined;
     };
     """
     #console.log script
