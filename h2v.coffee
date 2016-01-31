@@ -12,6 +12,7 @@ htmlparser = require 'htmlparser2'
 _domId = 0
 
 _signReg = /\{([^}]+)\}/g
+_funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/
 _strEndReg = /[^]+""$/
 
 objectKeys = (obj = {})->
@@ -157,7 +158,17 @@ parserAttr = (attribs, ix)->
         if key.indexOf('mc-') == 0
             key = key.replace 'mc-', ''
             if key.indexOf('on-') == 0
-                script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
+                fun = val.trim()
+                if _funReg.test fun
+                    funName = fun.substr 0, fun.indexOf('(')
+                    args = fun.substr fun.indexOf('(') + 1
+                    args = args.substr(0, args.length - 1).split ','
+                    args.splice 0, 0, "'#{funName}'"
+                    #console.log args
+                    script += "#{bNS ix + 1} __mc__attr['#{key}'] = [#{args}];"
+
+                else
+                    script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
             else
                 #parserFormatters dom.attribs[attr]
 

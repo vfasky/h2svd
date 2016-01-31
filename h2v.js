@@ -7,13 +7,15 @@
  * @link http://vfasky.com
  */
 'use strict';
-var _domId, _signReg, _strEndReg, bNS, domToScript, each, htmlparser, objectKeys, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserBinders, parserFormatters;
+var _domId, _funReg, _signReg, _strEndReg, bNS, domToScript, each, htmlparser, objectKeys, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserBinders, parserFormatters;
 
 htmlparser = require('htmlparser2');
 
 _domId = 0;
 
 _signReg = /\{([^}]+)\}/g;
+
+_funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/;
 
 _strEndReg = /[^]+""$/;
 
@@ -133,12 +135,21 @@ parserAttr = function(attribs, ix) {
   script = '';
   attr = objectKeys(attribs);
   each(attr, function(key) {
-    var val;
+    var args, fun, funName, val;
     val = attribs[key];
     if (key.indexOf('mc-') === 0) {
       key = key.replace('mc-', '');
       if (key.indexOf('on-') === 0) {
-        return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
+        fun = val.trim();
+        if (_funReg.test(fun)) {
+          funName = fun.substr(0, fun.indexOf('('));
+          args = fun.substr(fun.indexOf('(') + 1);
+          args = args.substr(0, args.length - 1).split(',');
+          args.splice(0, 0, "'" + funName + "'");
+          return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = [" + args + "];";
+        } else {
+          return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
+        }
       } else {
         script += "" + (parserFormatters(val, "__mc__attr['" + key + "']", ix));
         return script += "" + (parserBinders(key, ix));
