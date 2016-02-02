@@ -165,7 +165,7 @@ parserFormatters = function(key, valName, ix) {
   var domVal, funcs, script;
   key = key.trim();
   if (key.indexOf('|') === -1) {
-    return (bNS(ix + 1)) + " " + valName + " = " + key + "; \n";
+    return (bNS(ix + 1)) + " " + valName + " = " + (key || "''") + "; \n";
   }
   funcs = key.split(' | ');
   domVal = funcs[0];

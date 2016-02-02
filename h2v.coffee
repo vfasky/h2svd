@@ -184,7 +184,7 @@ parserAttr = (attribs, ix)->
 parserFormatters = (key, valName, ix)->
     key = key.trim()
     if key.indexOf('|') == -1
-        return "#{bNS ix + 1} #{valName} = #{key}; \n"
+        return "#{bNS ix + 1} #{valName} = #{key or "''"}; \n"
 
     funcs = key.split ' | '
     domVal = funcs[0]
