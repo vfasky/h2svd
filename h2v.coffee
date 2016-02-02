@@ -51,7 +51,7 @@ parserAttrEach = (code, dom, ix, attrKey)->
 #{bNS ix + 1} // each #{attrKey} = #{code}
 #{bNS ix + 1} var __mc__arr;
 #{parserFormatters _arr, '__mc__arr', ix}
-#{bNS ix + 1} __mc__arr = __mc__arr.length ? __mc__arr : [];
+#{bNS ix + 1} __mc__arr = isArray(__mc__arr) ? __mc__arr : [];
 #{bNS ix + 1} for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
 #{bNS ix + 1}     var #{_vName} = __mc__arr[#{_ix}];
 #{bNS ix + 1}     #{parseDom dom, ix + 1}
@@ -88,7 +88,7 @@ parserAttrFor = (code, dom, ix)->
         script = """
 
 #{bNS ix + 1} // for #{code}
-#{bNS ix + 1} var __mc__arr = #{_arr}.length ? #{_arr} : [];
+#{bNS ix + 1} var __mc__arr = isArray(#{_arr}) ? #{_arr} : [];
 #{bNS ix + 1} for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
 #{bNS ix + 1}     var #{_vName} = __mc__arr[#{_ix}];
 #{bNS ix + 1}     #{parseDom dom, ix + 1}
@@ -350,6 +350,7 @@ domToScript = (tree)->
     var __mc_T_binders = mcore.Template.binders;
     var objectKeys = mcore.util.objectKeys;
     var each = mcore.util.each;
+    var isArray = mcore.util.isArray;
  
     module.exports = function(scope, __mc__observe){
         var __mc__children_0 = [];
@@ -382,4 +383,5 @@ module.exports = (html)->
     _domId = 0
     domTree = htmlparser.parseDOM html
     domToScript domTree
+
 

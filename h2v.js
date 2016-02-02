@@ -68,7 +68,7 @@ parserAttrEach = function(code, dom, ix, attrKey) {
   _ix = '__mc__$ix_';
   _arr = code;
   _vName = attrKey.replace('mc-each-', '');
-  return "\n" + (bNS(ix + 1)) + " // each " + attrKey + " = " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr;\n" + (parserFormatters(_arr, '__mc__arr', ix)) + "\n" + (bNS(ix + 1)) + " __mc__arr = __mc__arr.length ? __mc__arr : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endEach\n";
+  return "\n" + (bNS(ix + 1)) + " // each " + attrKey + " = " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr;\n" + (parserFormatters(_arr, '__mc__arr', ix)) + "\n" + (bNS(ix + 1)) + " __mc__arr = isArray(__mc__arr) ? __mc__arr : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endEach\n";
 };
 
 
@@ -87,7 +87,7 @@ parserAttrFor = function(code, dom, ix) {
     if (code.indexOf(',') !== -1) {
       _ix = code.split(',').pop().split(' in')[0].trim();
     }
-    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr = " + _arr + ".length ? " + _arr + " : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
+    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr = isArray(" + _arr + ") ? " + _arr + " : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
   } else if (code.indexOf(' of ') !== -1) {
     _key = code.split(' of ')[0];
     _obj = code.split(' of ').pop();
@@ -281,7 +281,7 @@ parseTree = function(tree, ix, children) {
 
 domToScript = function(tree) {
   var script;
-  script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_El = mcore.virtualDom.Element;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\nvar objectKeys = mcore.util.objectKeys;\nvar each = mcore.util.each;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
+  script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_El = mcore.virtualDom.Element;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\nvar objectKeys = mcore.util.objectKeys;\nvar each = mcore.util.each;\nvar isArray = mcore.util.isArray;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
   script += "\n    " + (parseTree(tree));
   script += "    if(__mc__children_0.length === 1 && __mc__children_0[0].render){\n        var virtualDom = __mc__children_0[0];\n    }\n    else{\n        var virtualDom = new __mc_T_El( 'mc-vd', {}, __mc__children_0 );\n    }\n\n    var templateDefined = {\n        'virtualDom': virtualDom,\n        'binders': __mc__binders\n    };\n    return templateDefined;\n};";
   return script;
