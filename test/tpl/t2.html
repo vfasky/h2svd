@@ -1,0 +1,182 @@
+<div mc-data-id="scope.id">
+    <ul>
+        <li mc-for="v in scope.list">
+            {v.name | toString}
+        </li>
+    </ul>
+    <ul>
+        <li mc-for="v, k in scope.list">
+            {v.name} {k | toString}
+        </li>
+    </ul>
+
+    <a mc-for="v of scope.books" mc-href="v.id">{v.name}</a>
+</div>
+<div class="main wrapper">
+    <div class="shop-step">
+        <span class="item first"></span>
+        <span class="item second second-done0"></span>
+        <span class="item third third-done0"></span>
+    </div>
+
+    <div class="shop-wrap">
+        <div class="shop-head">
+            <h2>确认用户信息</h2>
+        </div>
+
+        <div class="user-view">
+            <p class="item active">
+                <label>
+                    <input class="J-addressChk rad" type="radio" name="order_address">
+                    <span class="addr">姚瑛；1592****21；369**1；430821*******1；番禺区番禺大道北 555 号天安科技园总部 2 号楼</span>
+                    <span class="oper">
+                            <a class="J-addressEdit" href="javascript:;">修改</a>
+                            <a class="J-addressDel" href="javascript:;">删除</a>
+                        </span>
+                </label>
+            </p>
+        </div>
+
+        <div id="J-userInfo" class="user-info shop-line hide">
+            <form id="J-userInfoForm" class="ui-form">
+                <div class="ui-form-item">
+                    <label for="" class="ui-label"><span class="ui-form-required">*</span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
+                    <input class="ui-input" type="text" name="full_name" required />
+                    <div class="ui-form-explain"></div>
+                </div>
+                <div class="ui-form-item ui-form-item-error">
+                    <label for="" class="ui-label"><span class="ui-form-required">*</span>手机号码：</label>
+                    <input class="ui-input" type="text" name="mobile" required />
+                    <div class="ui-form-explain">您已经是软件用户，请联系服务人员进行二次购买，此处暂不支持软件用户二次购买。</div>
+                </div>
+                <div class="ui-form-item">
+                    <label for="" class="ui-label"><span class="ui-form-required">*</span>QQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：</label>
+                    <input class="ui-input" type="text" name="qq_code" required />
+                    <div class="ui-form-explain"></div>
+                </div>
+                <div class="ui-form-item ui-form-item-error">
+                    <label for="" class="ui-label"><span class="ui-form-required">*</span>身份证号：</label>
+                    <input class="ui-input" type="text" name="id_card" required />
+                    <div class="ui-form-explain">您已经是软件用户，请联系服务人员进行二次购买，此处暂不支持软件用户二次购买。</div>
+                </div>
+                <div id="J-userAddress" class="ui-form-item">
+                    <label class="ui-label"><span class="ui-form-required">*</span>收货地址：</label>
+                    <select name="province" required>
+                        <option value="">请选择</option>
+                        <option value="1">广东</option>
+                        <option value="2">湖南</option>
+                    </select>
+                    <select name="city" required>
+                        <option value="">请选择</option>
+                        <option value="1">广州</option>
+                        <option value="2">深圳</option>
+                    </select>
+                    <select name="district" required>
+                        <option value="">请选择</option>
+                        <option value="1">番禺</option>
+                        <option value="2">天河</option>
+                    </select>
+                    <input class="ui-input street" type="text" name="street" required>
+                </div>
+                <div class="ui-form-item">
+                    <label>
+                        <input class="save-chk" type="checkbox" name="save_default"
+                        required />保存为默认账号</label>
+                    <span class="sub-btn"><input class="btn btn-primary" type="submit" value="确定"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="shop-head">
+            <h2>确定订单信息</h2>
+        </div>
+        <div id="J-orderInfo" class="order-info">
+            <table class="ui-table ui-table-center">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>所含服务</th>
+                        <th>单价/使用期限</th>
+                        <th>数量</th>
+                        <th>合计</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>巡航版</td>
+                        <td>巡航版及经传手机版</td>
+                        <td>18800元</td>
+                        <td>1</td>
+                        <td>18800元</td>
+                        <td><a class="J-delGoodsBtn" href="javascript:;">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="total" colspan="6">
+                            <span class="red2">备注：如已经是软件用户，请联系服务人员进行二次购买，此处暂不支持软件用户二次购买。</span>
+                            <span class="num">总计：<b class="red2">18800</b> 元</span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="shop-head">
+            <h2>发票信息 <a class="J-invoiceEditBtn invoice-edit-btn hide" href="javascript:;"><i class="icon-comm icon-edit">&#xe607;</i>修改</a></h2>
+        </div>
+        <div class="J-invoiceInfo invoice-info shop-line">
+            <a class="J-isInvoiceBtn btn btn-primary" href="javascript:;">我需要发票</a>
+            <a class="J-noInvoiceBtn btn btn-primary" href="javascript:;">不需要发票</a>
+        </div>
+        <div class="J-invoiceView invoice-view shop-line hide">
+            <p>发票类型：普通发票</p>
+            <p>发票抬头：个人</p>
+            <p>发票内容：经传多赢证券交易辅助决策软件</p>
+            <p class="tips">备注：发票将于次月寄往各地办事处，请联系办事处领取，如有特殊情况请致电：400-700-3809</p>
+        </div>
+        <div class="J-isInvoiceBox invoice-view shop-line hide">
+            <form id="J-invoiceForm">
+                <p>
+                    发票类型：
+                    <label class="type">
+                        <input class="J-invoiceType" type="radio" name="invoice_type" checked="checked"
+                        value="1">普通发票
+                    </label>
+                    <label class="type">
+                        <input class="J-invoiceType" type="radio" name="invoice_type" value="2">增值税专用发票
+                    </label>
+                </p>
+                <div class="J-comInvoiceEdit">
+                    <p>
+                        发票抬头：
+                        <select class="J-invoiceName name" name="invoice_name" required>
+                            <option value="1">个人</option>
+                            <option value="2">单位</option>
+                        </select>
+                        <input class="J-invoiceUnitName ui-input unit hide" type="text" name="unit_name"
+                        value="广州经传多赢投资咨询有限公司">
+                    </p>
+                    <p>发票内容：经传多赢证券交易辅助决策软件</p>
+                    <p class="tips">备注：发票将于次月寄往各地办事处，请联系办事处领取，如有特殊情况请致电：400-700-3809</p>
+                </div>
+                <p class="J-taxInvoiceEdit tips hide">备注：如您需要开通增值税专用发票，请致电400-700-3809</p>
+                <p class="btns">
+                    <input class="btn btn-primary" type="submit" value="保存发票信息">
+                    <a class="J-noInvoicebtn btn btn-primary" href="javascript:;">暂不需要发票</a>
+                </p>
+            </form>
+        </div>
+        <div class="J-noInvoiceBox invoice-view shop-line hide">
+            <p class="tips">不需要发票</p>
+        </div>
+
+        <div class="total-info">
+            <p class="num">商品金额 18800 元</p>
+            <p class="all">您需为订单支付 总共：<b class="red2">18800</b> 元</p>
+            <a id="J-orderSubmit" class="order-submit btn btn-primary btn-lg" href="javascript:;">提交订单</a> 
+        </div>
+    </div>
+</div>

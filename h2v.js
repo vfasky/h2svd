@@ -7,9 +7,11 @@
  * @link http://vfasky.com
  */
 'use strict';
-var _domId, _funReg, _signReg, _strEndReg, bNS, domToScript, each, htmlparser, objectKeys, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserBinders, parserFormatters;
+var _domId, _funReg, _signReg, _strEndReg, beautify, domToScript, each, htmlparser, objectKeys, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserBinders, parserFormatters;
 
 htmlparser = require('htmlparser2');
+
+beautify = require('js-beautify').js_beautify;
 
 _domId = 0;
 
@@ -35,26 +37,14 @@ objectKeys = function(obj) {
 };
 
 each = function(arr, done) {
-  var j, k, len1, res, v;
-  for (k = j = 0, len1 = arr.length; j < len1; k = ++j) {
+  var i, k, len, res, v;
+  for (k = i = 0, len = arr.length; i < len; k = ++i) {
     v = arr[k];
     res = done(v, k);
     if (false === res) {
       return;
     }
   }
-};
-
-bNS = function(len) {
-  var i;
-  return ((function() {
-    var j, ref, results;
-    results = [];
-    for (i = j = 0, ref = len * 4; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-      results.push('');
-    }
-    return results;
-  })()).join(' ');
 };
 
 
@@ -68,7 +58,7 @@ parserAttrEach = function(code, dom, ix, attrKey) {
   _ix = '__mc__$ix_';
   _arr = code;
   _vName = attrKey.replace('mc-each-', '');
-  return "\n" + (bNS(ix + 1)) + " // each " + attrKey + " = " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr;\n" + (parserFormatters(_arr, '__mc__arr', ix)) + "\n" + (bNS(ix + 1)) + " __mc__arr = isArray(__mc__arr) ? __mc__arr : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endEach\n";
+  return "\n// each " + attrKey + " = " + code + "\nvar __mc__arr;\n" + (parserFormatters(_arr, '__mc__arr', ix)) + "\n__mc__arr = __isArray(__mc__arr) ? __mc__arr : [];\nfor(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n    var " + _vName + " = __mc__arr[" + _ix + "];\n    " + (parseDom(dom, ix + 1)) + "\n}// endEach\n";
 };
 
 
@@ -87,7 +77,7 @@ parserAttrFor = function(code, dom, ix) {
     if (code.indexOf(',') !== -1) {
       _ix = code.split(',').pop().split(' in')[0].trim();
     }
-    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var __mc__arr = isArray(" + _arr + ") ? " + _arr + " : [];\n" + (bNS(ix + 1)) + " for(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n" + (bNS(ix + 1)) + "     var " + _vName + " = __mc__arr[" + _ix + "];\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
+    script = "\n// for " + code + "\nvar __mc__arr = __isArray(" + _arr + ") ? " + _arr + " : [];\nfor(var " + _ix + "=0, len=__mc__arr.length; " + _ix + " < len; " + _ix + "++){\n    var " + _vName + " = __mc__arr[" + _ix + "];\n    " + (parseDom(dom, ix + 1)) + "\n";
   } else if (code.indexOf(' of ') !== -1) {
     _key = code.split(' of ')[0];
     _obj = code.split(' of ').pop();
@@ -96,9 +86,9 @@ parserAttrFor = function(code, dom, ix) {
       _val = _key.split(',').pop();
       _key = _key.split(',')[0];
     }
-    script = "\n" + (bNS(ix + 1)) + " // for " + code + "\n" + (bNS(ix + 1)) + " var __mc__obj = " + _obj + " || {};\n" + (bNS(ix + 1)) + " for(var " + _key + " in __mc__obj){\n" + (bNS(ix + 1)) + "     var " + _val + " = __mc__obj[" + _key + "] || {};\n" + (bNS(ix + 1)) + "     " + (parseDom(dom, ix + 1)) + "\n";
+    script = "\n// for " + code + "\nvar __mc__obj = " + _obj + " || {};\nfor(var " + _key + " in __mc__obj){\n    var " + _val + " = __mc__obj[" + _key + "] || {};\n    " + (parseDom(dom, ix + 1)) + "\n";
   }
-  return script += (bNS(ix + 1)) + " } // endFor \n";
+  return script += "} // endFor \n";
 };
 
 
@@ -110,7 +100,7 @@ parserAttrIf = function(code, dom, ix) {
   var script;
   script = '';
   delete dom.attribs['mc-if'];
-  return script = "\n" + (bNS(ix + 1)) + " // if " + code + "\n" + (bNS(ix + 1)) + " if( " + code + " ){\n" + (bNS(ix + 1)) + "    " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endif \n";
+  return script = "\n// if " + code + "\nif( " + code + " ){\n   " + (parseDom(dom, ix + 1)) + "\n}// endif \n";
 };
 
 
@@ -122,7 +112,7 @@ parserAttrUnless = function(code, dom, ix) {
   var script;
   script = '';
   delete dom.attribs['mc-unless'];
-  return script = "\n" + (bNS(ix + 1)) + " // if " + code + "\n" + (bNS(ix + 1)) + " if( !(" + code + ") ){\n" + (bNS(ix + 1)) + "    " + (parseDom(dom, ix + 1)) + "\n" + (bNS(ix + 1)) + " }// endif \n";
+  return script = "\n// if " + code + "\nif( !(" + code + ") ){\n   " + (parseDom(dom, ix + 1)) + "\n}// endif \n";
 };
 
 
@@ -146,31 +136,31 @@ parserAttr = function(attribs, ix) {
           args = fun.substr(fun.indexOf('(') + 1);
           args = args.substr(0, args.length - 1).split(',');
           args.splice(0, 0, "'" + funName + "'");
-          return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = [" + args + "];";
+          return script += "__mc__attr['" + key + "'] = [" + args + "];";
         } else {
-          return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
+          return script += "__mc__attr['" + key + "'] = '" + val + "';";
         }
       } else {
         script += "" + (parserFormatters(val, "__mc__attr['" + key + "']", ix));
-        return script += "" + (parserBinders(key, ix));
+        return script += "__parserBinders(__mc__binderData, __mc__isBindObserve, '" + key + "', __mc__attr['" + key + "']);";
       }
     } else {
-      return script += (bNS(ix + 1)) + " __mc__attr['" + key + "'] = '" + val + "';";
+      return script += "__mc__attr['" + key + "'] = '" + val + "';";
     }
   });
-  return script + '\n';
+  return script;
 };
 
 parserFormatters = function(key, valName, ix) {
   var domVal, funcs, script;
   key = key.trim();
   if (key.indexOf('|') === -1) {
-    return (bNS(ix + 1)) + " " + valName + " = " + (key || "''") + "; \n";
+    return valName + " = " + (key || "''") + "; \n";
   }
   funcs = key.split(' | ');
   domVal = funcs[0];
   funcs.splice(0, 1);
-  script = "    \n" + (bNS(ix + 1)) + " " + valName + " = (function(x){\n    ";
+  script = "    \n" + valName + " = (function(x){\n    ";
   each(funcs, function(fun) {
     var args, formatter;
     args = [];
@@ -183,15 +173,15 @@ parserFormatters = function(key, valName, ix) {
     });
     formatter = args[0];
     args[0] = 'x';
-    return script += (bNS(ix + 2)) + " // " + formatter + "\n" + (bNS(ix + 2)) + " if( __mc_T_formatters.hasOwnProperty('" + formatter + "') ) {\n" + (bNS(ix + 2)) + "     x = __mc_T_formatters['" + formatter + "'](" + (args.join(',')) + ");\n" + (bNS(ix + 2)) + " } // end " + formatter + " \n";
+    return script += "// " + formatter + "\nif( __mc_T_formatters.hasOwnProperty('" + formatter + "') ) {\n    x = __mc_T_formatters['" + formatter + "'](" + (args.join(',')) + ");\n} // end " + formatter + " \n";
   });
-  script += (bNS(ix + 2)) + " return x;\n" + (bNS(ix + 1)) + " })(" + domVal + ");\n";
+  script += "return x;\n})(" + domVal + ");\n";
   return script;
 };
 
 parserBinders = function(sKey, sVal, ix) {
   var script;
-  return script = (bNS(ix + 1)) + " // binders check\n" + (bNS(ix + 1)) + " if( __mc_T_binders.hasOwnProperty('" + sKey + "') ){\n" + (bNS(ix + 1)) + "    __mc__isBindObserve = true;\n" + (bNS(ix + 1)) + "    __mc__binderData.push({attrName: '" + sKey + "', value: __mc__attr['" + sKey + "']});\n" + (bNS(ix + 1)) + " }// end \n";
+  return script = "// binders check\nif( __mc_T_binders.hasOwnProperty('" + sKey + "') ){\n   __mc__isBindObserve = true;\n   __mc__binderData.push({attrName: '" + sKey + "', value: __mc__attr['" + sKey + "']});\n}// end \n";
 };
 
 
@@ -200,36 +190,10 @@ parserBinders = function(sKey, sVal, ix) {
  */
 
 parseDom = function(dom, ix) {
-  var attr, attrKeys, code, id, j, len1, mapTree, mapTreeId, script, text;
+  var attr, attrKeys, code, i, id, len, mapTree, mapTreeId, script, text;
   id = _domId++;
-  script = "\n" + (bNS(ix + 1)) + " var __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n";
-  if (dom.attribs) {
-    if (dom.attribs['mc-for']) {
-      return parserAttrFor(dom.attribs['mc-for'], dom, ix);
-    }
-    if (dom.attribs['mc-if']) {
-      return parserAttrIf(dom.attribs['mc-if'], dom, ix);
-    }
-    if (dom.attribs['mc-unless']) {
-      return parserAttrUnless(dom.attribs['mc-unless'], dom, ix);
-    }
-    attrKeys = objectKeys(dom.attribs);
-    for (j = 0, len1 = attrKeys.length; j < len1; j++) {
-      attr = attrKeys[j];
-      if (attr.indexOf('mc-each-') === 0) {
-        return parserAttrEach(dom.attribs[attr], dom, ix, attr);
-      }
-    }
-    script += parserAttr(dom.attribs, ix);
-  }
-  if (dom.children && dom.children.length > 0) {
-    script += parseTree(dom.children, ix, "__mc__children_" + id);
-  }
-  if (dom.name) {
-    script += "\n" + (bNS(ix + 1)) + " var __mc__new_el = new __mc_T_El('" + dom.name + "', __mc__attr, __mc__children_" + id + ");";
-    script += (bNS(ix + 1)) + " var __mc__attr__keys = objectKeys(__mc__attr);\n" + (bNS(ix + 1)) + " each(__mc__attr__keys, function(attr){\n" + (bNS(ix + 1)) + "     if(attr.indexOf('on-') === 0){ __mc__isBindObserve = true; }\n" + (bNS(ix + 1)) + " });\n" + (bNS(ix + 1)) + " if(__mc__isBindObserve){\n" + (bNS(ix + 1)) + "     __mc__new_el.bindTemplate(__mc__observe); \n" + (bNS(ix + 1)) + "     for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ \n" + (bNS(ix + 1)) + "         var __mc_v = __mc__binderData[__mc_i];\n" + (bNS(ix + 1)) + "         __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);\n" + (bNS(ix + 1)) + "     }\n" + (bNS(ix + 1)) + " }\n";
-    script += "\n" + (bNS(ix + 1)) + " tree.push( __mc__new_el );";
-  } else if (dom.type === 'text') {
+  if (dom.type === 'text') {
+    script = '';
     dom.data = dom.data.replace(/\n/g, ' ');
     text = dom.data;
     if (_signReg.test(text)) {
@@ -238,7 +202,7 @@ parseDom = function(dom, ix) {
       code = text.replace(_signReg, function(key, val) {
         var reKey;
         reKey = "__mc__rp__key_" + (mapTreeId++);
-        script += "\n" + (bNS(ix + 1)) + " var " + reKey + ";";
+        script += "var " + reKey + ";";
         mapTree.push({
           key: reKey,
           val: val
@@ -250,18 +214,47 @@ parseDom = function(dom, ix) {
         code += '"';
       }
       each(mapTree, function(v) {
-        return script += "\n" + (parserFormatters(v.val, v.key, ix));
+        return script += "" + (parserFormatters(v.val, v.key, ix));
       });
-      script += "\n" + (bNS(ix + 1)) + " tree.push( " + code + " );";
+      script += "tree.push( " + code + " );";
     } else {
-      script += "\n" + (bNS(ix + 1)) + " tree.push( '" + dom.data + "' );";
+      script += "tree.push( '" + dom.data + "' );";
     }
+    return script;
+  }
+  script = "var __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n";
+  if (dom.attribs) {
+    if (dom.attribs['mc-for']) {
+      return parserAttrFor(dom.attribs['mc-for'], dom, ix);
+    }
+    if (dom.attribs['mc-if']) {
+      return parserAttrIf(dom.attribs['mc-if'], dom, ix);
+    }
+    if (dom.attribs['mc-unless']) {
+      return parserAttrUnless(dom.attribs['mc-unless'], dom, ix);
+    }
+    attrKeys = objectKeys(dom.attribs);
+    for (i = 0, len = attrKeys.length; i < len; i++) {
+      attr = attrKeys[i];
+      if (attr.indexOf('mc-each-') === 0) {
+        return parserAttrEach(dom.attribs[attr], dom, ix, attr);
+      }
+    }
+    script += parserAttr(dom.attribs, ix);
+  }
+  if (dom.children && dom.children.length > 0) {
+    script += parseTree(dom.children, ix, "__mc__children_" + id);
+  }
+  if (dom.name) {
+    script += "var __mc__new_el = new __mc_T_El('" + dom.name + "', __mc__attr, __mc__children_" + id + ");";
+    script += "__bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);";
+    script += "tree.push( __mc__new_el );";
   }
   return script;
 };
 
 parseTree = function(tree, ix, children) {
-  var script, treeId;
+  var script, treeId, treeLen;
   if (ix == null) {
     ix = 0;
   }
@@ -269,21 +262,27 @@ parseTree = function(tree, ix, children) {
     children = '__mc__children_0';
   }
   treeId = _domId;
-  script = "\n" + (bNS(ix + 1)) + " (function(scope, tree){ // startTree " + treeId + "\n";
+  treeLen = 0;
+  script = "(function(scope, tree){ // startTree " + treeId + "\n";
   each(tree, function(dom, id) {
     if (dom.type !== 'text' || (dom.type === 'text' && dom.data.trim().length > 0)) {
-      return script += "" + (parseDom(dom, ix + 1));
+      script += "\n " + (parseDom(dom, ix + 1));
+      return treeLen++;
     }
   });
-  script += "\n" + (bNS(ix + 1)) + " })(scope, " + children + "); // endTree " + treeId + "\n";
-  return script;
+  script += "})(scope, " + children + "); // endTree " + treeId + "\n";
+  if (treeLen > 0) {
+    return script;
+  }
+  return '';
 };
 
 domToScript = function(tree) {
   var script;
-  script = "'use strict'\nvar mcore = require('mcore');\nvar __mc_T_El = mcore.virtualDom.Element;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\nvar objectKeys = mcore.util.objectKeys;\nvar each = mcore.util.each;\nvar isArray = mcore.util.isArray;\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;";
-  script += "\n    " + (parseTree(tree));
-  script += "    if(__mc__children_0.length === 1 && __mc__children_0[0].render){\n        var virtualDom = __mc__children_0[0];\n    }\n    else{\n        var virtualDom = new __mc_T_El( 'mc-vd', {}, __mc__children_0 );\n    }\n\n    var templateDefined = {\n        'virtualDom': virtualDom,\n        'binders': __mc__binders\n    };\n    return templateDefined;\n};";
+  script = "'use strict';\n\nvar mcore = require('mcore');\nvar __mc_T_El = mcore.virtualDom.Element;\nvar __mc_T_formatters = mcore.Template.formatters;\nvar __mc_T_binders = mcore.Template.binders;\nvar __objectKeys = mcore.util.objectKeys;\nvar __each = mcore.util.each;\nvar __isArray = mcore.util.isArray;\n\nvar __parserBinders = function(__mc__binderData, __mc__isBindObserve, key, val){\n    if( __mc_T_binders.hasOwnProperty(key) ){\n       __mc__isBindObserve = true;\n       __mc__binderData.push({attrName: key, value: val});\n    }\n};\n\n\n \nmodule.exports = function(scope, __mc__observe){\n    var __mc__children_0 = [];\n    var __mc__binders = {};\n    var __mc__dom_id = 0;\n\n    var __bindBinder = function(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData){\n        if(!__mc__isBindObserve){\n            var __mc__attr__keys = __objectKeys(__mc__attr);\n            __each(__mc__attr__keys, function(attr){\n                if(attr.indexOf('on-') === 0){\n                    __mc__isBindObserve = true;\n                }\n            });\n        }\n        if(__mc__isBindObserve){\n            __mc__new_el.bindTemplate(__mc__observe); \n            for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ \n                var __mc_v = __mc__binderData[__mc_i];\n                __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);\n            }\n        }\n    };\n\n    " + (parseTree(tree)) + "\n\n    if(__mc__children_0.length === 1 && __mc__children_0[0].render){\n        var virtualDom = __mc__children_0[0];\n    }\n    else{\n        var virtualDom = new __mc_T_El( 'mc-vd', {}, __mc__children_0 );\n    }\n\n    var templateDefined = {\n        'virtualDom': virtualDom\n    };\n    return templateDefined;\n};";
+  script = beautify(script, {
+    indent_size: 4
+  });
   return script;
 };
 

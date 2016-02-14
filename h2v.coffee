@@ -7,6 +7,7 @@
 'use strict'
 
 htmlparser = require 'htmlparser2'
+beautify = require('js-beautify').js_beautify
 
 # dom id
 _domId = 0
@@ -15,6 +16,7 @@ _signReg = /\{([^}]+)\}/g
 _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/
 _strEndReg = /[^]+""$/
 
+# Object.keys
 objectKeys = (obj = {})->
     return Object.keys(obj) if Object.keys
     keys = []
@@ -22,14 +24,13 @@ objectKeys = (obj = {})->
         keys.push key
     keys
 
+# Array each
 each = (arr, done)->
     for v, k in arr
         res = done v, k
         return if false == res
 
-# 构造空格
-bNS = (len)->
-    ('' for i in [0 ... len * 4]).join ' '
+
 
 ### 
 # 解释 <div mc-each-v="scope.list"></div>
@@ -48,14 +49,14 @@ parserAttrEach = (code, dom, ix, attrKey)->
 
     """
 
-#{bNS ix + 1} // each #{attrKey} = #{code}
-#{bNS ix + 1} var __mc__arr;
+// each #{attrKey} = #{code}
+var __mc__arr;
 #{parserFormatters _arr, '__mc__arr', ix}
-#{bNS ix + 1} __mc__arr = isArray(__mc__arr) ? __mc__arr : [];
-#{bNS ix + 1} for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
-#{bNS ix + 1}     var #{_vName} = __mc__arr[#{_ix}];
-#{bNS ix + 1}     #{parseDom dom, ix + 1}
-#{bNS ix + 1} }// endEach
+__mc__arr = __isArray(__mc__arr) ? __mc__arr : [];
+for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
+    var #{_vName} = __mc__arr[#{_ix}];
+    #{parseDom dom, ix + 1}
+}// endEach
 
 """
 
@@ -87,11 +88,11 @@ parserAttrFor = (code, dom, ix)->
 
         script = """
 
-#{bNS ix + 1} // for #{code}
-#{bNS ix + 1} var __mc__arr = isArray(#{_arr}) ? #{_arr} : [];
-#{bNS ix + 1} for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
-#{bNS ix + 1}     var #{_vName} = __mc__arr[#{_ix}];
-#{bNS ix + 1}     #{parseDom dom, ix + 1}
+// for #{code}
+var __mc__arr = __isArray(#{_arr}) ? #{_arr} : [];
+for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
+    var #{_vName} = __mc__arr[#{_ix}];
+    #{parseDom dom, ix + 1}
 
 """
 
@@ -107,15 +108,15 @@ parserAttrFor = (code, dom, ix)->
 
         script = """
 
-#{bNS ix + 1} // for #{code}
-#{bNS ix + 1} var __mc__obj = #{_obj} || {};
-#{bNS ix + 1} for(var #{_key} in __mc__obj){
-#{bNS ix + 1}     var #{_val} = __mc__obj[#{_key}] || {};
-#{bNS ix + 1}     #{parseDom dom, ix + 1}
+// for #{code}
+var __mc__obj = #{_obj} || {};
+for(var #{_key} in __mc__obj){
+    var #{_val} = __mc__obj[#{_key}] || {};
+    #{parseDom dom, ix + 1}
 
 """
 
-    script += "#{bNS ix + 1} } // endFor \n"
+    script += "} // endFor \n"
 
 ### 
 # 解释 if
@@ -126,10 +127,10 @@ parserAttrIf = (code, dom, ix)->
 
     script = """
 
-#{bNS ix + 1} // if #{code}
-#{bNS ix + 1} if( #{code} ){
-#{bNS ix + 1}    #{parseDom dom, ix + 1}
-#{bNS ix + 1} }// endif \n"""
+// if #{code}
+if( #{code} ){
+   #{parseDom dom, ix + 1}
+}// endif \n"""
 
 ### 
 # 解释 unless
@@ -140,10 +141,10 @@ parserAttrUnless = (code, dom, ix)->
 
     script = """
 
-#{bNS ix + 1} // if #{code}
-#{bNS ix + 1} if( !(#{code}) ){
-#{bNS ix + 1}    #{parseDom dom, ix + 1}
-#{bNS ix + 1} }// endif \n"""
+// if #{code}
+if( !(#{code}) ){
+   #{parseDom dom, ix + 1}
+}// endif \n"""
 
 
 ### 
@@ -165,26 +166,27 @@ parserAttr = (attribs, ix)->
                     args = args.substr(0, args.length - 1).split ','
                     args.splice 0, 0, "'#{funName}'"
                     #console.log args
-                    script += "#{bNS ix + 1} __mc__attr['#{key}'] = [#{args}];"
+                    script += "__mc__attr['#{key}'] = [#{args}];"
 
                 else
-                    script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
+                    script += "__mc__attr['#{key}'] = '#{val}';"
             else
                 #parserFormatters dom.attribs[attr]
 
                 script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
-                script += "#{parserBinders key, ix}"
+                script += "__parserBinders(__mc__binderData, __mc__isBindObserve, '#{key}', __mc__attr['#{key}']);"
+                #script += "#{parserBinders key, ix}"
         else
-            script += "#{bNS ix + 1} __mc__attr['#{key}'] = '#{val}';"
+            script += "__mc__attr['#{key}'] = '#{val}';"
             
-    script + '\n'
+    script
 
 # 解释过滤函数
 # 'test' | toNumber | toFixed 2 =>
 parserFormatters = (key, valName, ix)->
     key = key.trim()
     if key.indexOf('|') == -1
-        return "#{bNS ix + 1} #{valName} = #{key or "''"}; \n"
+        return "#{valName} = #{key or "''"}; \n"
 
     funcs = key.split ' | '
     domVal = funcs[0]
@@ -192,7 +194,7 @@ parserFormatters = (key, valName, ix)->
 
     script = """
     
-#{bNS ix + 1} #{valName} = (function(x){
+#{valName} = (function(x){
     
 """
 
@@ -206,17 +208,17 @@ parserFormatters = (key, valName, ix)->
         args[0] = 'x'
 
         script += """
-#{bNS ix + 2} // #{formatter}
-#{bNS ix + 2} if( __mc_T_formatters.hasOwnProperty('#{formatter}') ) {
-#{bNS ix + 2}     x = __mc_T_formatters['#{formatter}'](#{args.join(',')});
-#{bNS ix + 2} } // end #{formatter} \n
+// #{formatter}
+if( __mc_T_formatters.hasOwnProperty('#{formatter}') ) {
+    x = __mc_T_formatters['#{formatter}'](#{args.join(',')});
+} // end #{formatter} \n
 """
 
         #console.log fun
 
     script += """
-#{bNS ix + 2} return x;
-#{bNS ix + 1} })(#{domVal});\n
+return x;
+})(#{domVal});\n
 """
 
     #console.log script
@@ -226,11 +228,11 @@ parserFormatters = (key, valName, ix)->
 # 解释属性绑定
 parserBinders = (sKey, sVal, ix)->
     script = """
-#{bNS ix + 1} // binders check
-#{bNS ix + 1} if( __mc_T_binders.hasOwnProperty('#{sKey}') ){
-#{bNS ix + 1}    __mc__isBindObserve = true;
-#{bNS ix + 1}    __mc__binderData.push({attrName: '#{sKey}', value: __mc__attr['#{sKey}']});
-#{bNS ix + 1} }// end \n"""
+// binders check
+if( __mc_T_binders.hasOwnProperty('#{sKey}') ){
+   __mc__isBindObserve = true;
+   __mc__binderData.push({attrName: '#{sKey}', value: __mc__attr['#{sKey}']});
+}// end \n"""
 
 
 
@@ -240,7 +242,43 @@ parserBinders = (sKey, sVal, ix)->
 ###
 parseDom = (dom, ix)->
     id = _domId++
-    script = "\n#{bNS ix + 1} var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n"
+
+    # 文本处理
+    if dom.type == 'text'
+        script = ''
+        # 解释 { xx }
+        dom.data = dom.data.replace /\n/g, ' '
+        text = dom.data
+        if _signReg.test(text)
+            mapTree = []
+            mapTreeId = 0
+            code = text.replace _signReg, (key, val)->
+                reKey = "__mc__rp__key_#{mapTreeId++}"
+                script += "var #{reKey};"
+
+                mapTree.push
+                    key: reKey
+                    val: val
+
+                '" + '+ reKey + ' + "'
+
+            code = '"' + code
+            if false == _strEndReg.test(code)
+                code += '"'
+
+            each mapTree, (v)->
+                 script += "#{parserFormatters v.val, v.key, ix}"
+        
+            #console.log script
+            
+            script += "tree.push( #{code} );"
+        else
+            script += "tree.push( '#{dom.data}' );"
+
+        return script
+
+
+    script = "var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n"
     
     if dom.attribs
         # 解释 for
@@ -262,8 +300,6 @@ parseDom = (dom, ix)->
             if attr.indexOf('mc-each-') == 0
                 return parserAttrEach dom.attribs[attr], dom, ix, attr
 
-            
-
         # 解释属性
         script += parserAttr dom.attribs, ix
 
@@ -273,94 +309,81 @@ parseDom = (dom, ix)->
 
     # tag 处理, 自定义组件处理
     if dom.name
-        script += "\n#{bNS ix + 1} var __mc__new_el = new __mc_T_El('#{dom.name}', __mc__attr, __mc__children_#{id});"
-        script += """
-#{bNS ix + 1} var __mc__attr__keys = objectKeys(__mc__attr);
-#{bNS ix + 1} each(__mc__attr__keys, function(attr){
-#{bNS ix + 1}     if(attr.indexOf('on-') === 0){ __mc__isBindObserve = true; }
-#{bNS ix + 1} });
-#{bNS ix + 1} if(__mc__isBindObserve){
-#{bNS ix + 1}     __mc__new_el.bindTemplate(__mc__observe); 
-#{bNS ix + 1}     for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ 
-#{bNS ix + 1}         var __mc_v = __mc__binderData[__mc_i];
-#{bNS ix + 1}         __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);
-#{bNS ix + 1}     }
-#{bNS ix + 1} }
-
-"""
-        script += "\n#{bNS ix + 1} tree.push( __mc__new_el );"
-    # 文本处理
-    else if dom.type == 'text'
-        # 解释 { xx }
-        dom.data = dom.data.replace /\n/g, ' '
-        text = dom.data
-        #if text.indexOf('{') != -1 and text.indexOf('}') != -1
-            #code = text.replace /\{/g, '" + ('
-            #           .replace /\}/g, ') + "'
-        if _signReg.test(text)
-            mapTree = []
-            mapTreeId = 0
-            code = text.replace _signReg, (key, val)->
-                reKey = "__mc__rp__key_#{mapTreeId++}"
-                script += "\n#{bNS ix + 1} var #{reKey};"
-
-                mapTree.push
-                    key: reKey
-                    val: val
-
-                '" + '+ reKey + ' + "'
-
-            code = '"' + code
-            if false == _strEndReg.test(code)
-                code += '"'
-
-            each mapTree, (v)->
-                 script += "\n#{parserFormatters v.val, v.key, ix}"
+        script += "var __mc__new_el = new __mc_T_El('#{dom.name}', __mc__attr, __mc__children_#{id});"
+        script += "__bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);"
+        script += "tree.push( __mc__new_el );"
         
-            #console.log script
-            
-            script += "\n#{bNS ix + 1} tree.push( #{code} );"
-        else
-            script += "\n#{bNS ix + 1} tree.push( '#{dom.data}' );"
-
+    
     script
 
 
 # 解释 dom tree
-parseTree = (tree, ix=0, children='__mc__children_0')->
+parseTree = (tree, ix = 0, children='__mc__children_0')->
     treeId = _domId
-    script = "\n#{bNS ix + 1} (function(scope, tree){ // startTree #{treeId}\n"
+    treeLen = 0
+    script = "(function(scope, tree){ // startTree #{treeId}\n"
 
     each tree, (dom, id)->
         # 过滤空行
         if dom.type != 'text' or (dom.type == 'text' and dom.data.trim().length > 0)
-            script += "#{parseDom dom, ix + 1}"
+            script += "\n #{parseDom dom, ix + 1}"
+            treeLen++
 
-    script += "\n#{bNS ix + 1} })(scope, #{children}); // endTree #{treeId}\n"
-    script
+    script += "})(scope, #{children}); // endTree #{treeId}\n"
+
+    if treeLen > 0
+        return script
+    return ''
 
 
 # 将 dom 转成 js
 domToScript = (tree)->
+
     script = """
-    'use strict'
+    'use strict';
+    
     var mcore = require('mcore');
     var __mc_T_El = mcore.virtualDom.Element;
     var __mc_T_formatters = mcore.Template.formatters;
     var __mc_T_binders = mcore.Template.binders;
-    var objectKeys = mcore.util.objectKeys;
-    var each = mcore.util.each;
-    var isArray = mcore.util.isArray;
+    var __objectKeys = mcore.util.objectKeys;
+    var __each = mcore.util.each;
+    var __isArray = mcore.util.isArray;
+
+    var __parserBinders = function(__mc__binderData, __mc__isBindObserve, key, val){
+        if( __mc_T_binders.hasOwnProperty(key) ){
+           __mc__isBindObserve = true;
+           __mc__binderData.push({attrName: key, value: val});
+        }
+    };
+
+    
  
     module.exports = function(scope, __mc__observe){
         var __mc__children_0 = [];
         var __mc__binders = {};
         var __mc__dom_id = 0;
-    """
 
-    script += "\n    #{parseTree tree}"
+        var __bindBinder = function(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData){
+            if(!__mc__isBindObserve){
+                var __mc__attr__keys = __objectKeys(__mc__attr);
+                __each(__mc__attr__keys, function(attr){
+                    if(attr.indexOf('on-') === 0){
+                        __mc__isBindObserve = true;
+                    }
+                });
+            }
+            if(__mc__isBindObserve){
+                __mc__new_el.bindTemplate(__mc__observe); 
+                for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ 
+                    var __mc_v = __mc__binderData[__mc_i];
+                    __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);
+                }
+            }
+        };
 
-    script += """
+        #{parseTree tree}
+
         if(__mc__children_0.length === 1 && __mc__children_0[0].render){
             var virtualDom = __mc__children_0[0];
         }
@@ -369,12 +392,15 @@ domToScript = (tree)->
         }
     
         var templateDefined = {
-            'virtualDom': virtualDom,
-            'binders': __mc__binders
+            'virtualDom': virtualDom
         };
         return templateDefined;
     };
     """
+
+    script = beautify script,
+        indent_size: 4
+
     #console.log script
     script
 

@@ -1,10 +1,11 @@
 {
   "name": "h2svd-loader",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "html to simple-virtual-dom",
   "main": "index.js",
   "dependencies": {
     "htmlparser2": "^3.9.0",
+    "js-beautify": "^1.6.2",
     "loader-utils": "^0.2.12",
     "webpack": "^1.12.10"
   },
