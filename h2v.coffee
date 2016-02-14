@@ -174,7 +174,7 @@ parserAttr = (attribs, ix)->
                 #parserFormatters dom.attribs[attr]
 
                 script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
-                script += "__parserBinders(__mc__binderData, __mc__isBindObserve, '#{key}', __mc__attr['#{key}']);"
+                script += "__mc__isBindObserve = __parserBinders(__mc__binderData, __mc__isBindObserve, '#{key}', __mc__attr['#{key}']);"
                 #script += "#{parserBinders key, ix}"
         else
             script += "__mc__attr['#{key}'] = '#{val}';"
@@ -350,19 +350,18 @@ domToScript = (tree)->
     var __each = mcore.util.each;
     var __isArray = mcore.util.isArray;
 
-    var __parserBinders = function(__mc__binderData, __mc__isBindObserve, key, val){
-        if( __mc_T_binders.hasOwnProperty(key) ){
-           __mc__isBindObserve = true;
-           __mc__binderData.push({attrName: key, value: val});
-        }
-    };
-
-    
- 
     module.exports = function(scope, __mc__observe){
         var __mc__children_0 = [];
         var __mc__binders = {};
         var __mc__dom_id = 0;
+
+        var __parserBinders = function(__mc__binderData, __mc__isBindObserve, key, val){
+            if( __mc_T_binders.hasOwnProperty(key) ){
+               __mc__isBindObserve = true;
+               __mc__binderData.push({attrName: key, value: val});
+            }
+            return __mc__isBindObserve;
+        };
 
         var __bindBinder = function(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData){
             if(!__mc__isBindObserve){
