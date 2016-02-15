@@ -14,6 +14,7 @@ _domId = 0
 
 _signReg = /\{([^}]+)\}/g
 _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/
+_varReg = /(^[a-zA-Z0-9_-]+)$/
 _strEndReg = /[^]+""$/
 
 # Object.keys
@@ -175,7 +176,6 @@ parserAttr = (attribs, ix)->
 
                 script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
                 script += "__mc__isBindObserve = __parserBinders(__mc__binderData, __mc__isBindObserve, '#{key}', __mc__attr['#{key}']);"
-                #script += "#{parserBinders key, ix}"
         else
             script += "__mc__attr['#{key}'] = '#{val}';"
             
@@ -186,7 +186,12 @@ parserAttr = (attribs, ix)->
 parserFormatters = (key, valName, ix)->
     key = key.trim()
     if key.indexOf('|') == -1
-        return "#{valName} = #{key or "''"}; \n"
+        return "#{valName} = '';" if key != false and !key
+
+        if _varReg.test key
+            return "#{valName} = typeof #{key} === 'undefined' ? '#{key}' : #{key};"
+        else
+            return "#{valName} = #{key};"
 
     funcs = key.split ' | '
     domVal = funcs[0]
@@ -225,17 +230,15 @@ return x;
 
     script
 
-# 解释属性绑定
-parserBinders = (sKey, sVal, ix)->
-    script = """
-// binders check
-if( __mc_T_binders.hasOwnProperty('#{sKey}') ){
-   __mc__isBindObserve = true;
-   __mc__binderData.push({attrName: '#{sKey}', value: __mc__attr['#{sKey}']});
-}// end \n"""
 
+domToHtml = (dom)->
+    html = "<#{dom.name}"
 
+    if dom.attribs
+        for key, val of dom.attribs
+            html += " #{key}=\"#{val}\" "
 
+    html += '/>'
     
 ###
 # 解释dom结构
@@ -277,8 +280,14 @@ parseDom = (dom, ix)->
 
         return script
 
+    # 去除注释
+    if !dom.name
+        return ''
 
-    script = "var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n"
+    script = """
+    // #{domToHtml dom}
+    var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];
+    """
     
     if dom.attribs
         # 解释 for

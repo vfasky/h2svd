@@ -7,7 +7,7 @@
  * @link http://vfasky.com
  */
 'use strict';
-var _domId, _funReg, _signReg, _strEndReg, beautify, domToScript, each, htmlparser, objectKeys, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserBinders, parserFormatters;
+var _domId, _funReg, _signReg, _strEndReg, _varReg, beautify, domToHtml, domToScript, each, htmlparser, objectKeys, parseDom, parseTree, parserAttr, parserAttrEach, parserAttrFor, parserAttrIf, parserAttrUnless, parserFormatters;
 
 htmlparser = require('htmlparser2');
 
@@ -18,6 +18,8 @@ _domId = 0;
 _signReg = /\{([^}]+)\}/g;
 
 _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/;
+
+_varReg = /(^[a-zA-Z0-9_-]+)$/;
 
 _strEndReg = /[^]+""$/;
 
@@ -155,7 +157,14 @@ parserFormatters = function(key, valName, ix) {
   var domVal, funcs, script;
   key = key.trim();
   if (key.indexOf('|') === -1) {
-    return valName + " = " + (key || "''") + "; \n";
+    if (key !== false && !key) {
+      return valName + " = '';";
+    }
+    if (_varReg.test(key)) {
+      return valName + " = typeof " + key + " === 'undefined' ? '" + key + "' : " + key + ";";
+    } else {
+      return valName + " = " + key + ";";
+    }
   }
   funcs = key.split(' | ');
   domVal = funcs[0];
@@ -179,9 +188,17 @@ parserFormatters = function(key, valName, ix) {
   return script;
 };
 
-parserBinders = function(sKey, sVal, ix) {
-  var script;
-  return script = "// binders check\nif( __mc_T_binders.hasOwnProperty('" + sKey + "') ){\n   __mc__isBindObserve = true;\n   __mc__binderData.push({attrName: '" + sKey + "', value: __mc__attr['" + sKey + "']});\n}// end \n";
+domToHtml = function(dom) {
+  var html, key, ref, val;
+  html = "<" + dom.name;
+  if (dom.attribs) {
+    ref = dom.attribs;
+    for (key in ref) {
+      val = ref[key];
+      html += " " + key + "=\"" + val + "\" ";
+    }
+  }
+  return html += '/>';
 };
 
 
@@ -222,7 +239,10 @@ parseDom = function(dom, ix) {
     }
     return script;
   }
-  script = "var __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];\n";
+  if (!dom.name) {
+    return '';
+  }
+  script = "// " + (domToHtml(dom)) + "\nvar __mc__children_" + id + " = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];";
   if (dom.attribs) {
     if (dom.attribs['mc-for']) {
       return parserAttrFor(dom.attribs['mc-for'], dom, ix);
