@@ -1,5 +1,5 @@
 ###*
-# 转换 html 到 virtual Dom 
+# 转换 html 到 virtual Dom
 # @date 2016-01-08 20:12:21
 # @author vfasky <vfasky@gmail.com>
 # @link http://vfasky.com
@@ -33,7 +33,7 @@ each = (arr, done)->
 
 
 
-### 
+###
 # 解释 <div mc-each-v="scope.list"></div>
 ###
 parserAttrEach = (code, dom, ix, attrKey)->
@@ -63,7 +63,7 @@ for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
 
 
 
-### 
+###
 # 解释 <div mc-for="v, k in scope.list"></div>
 ###
 parserAttrFor = (code, dom, ix)->
@@ -83,7 +83,7 @@ parserAttrFor = (code, dom, ix)->
         # 数组 item 值
         _vName = code.split(' ')[0].replace ',', ''
 
-        # 取自定义key for v, k in x 
+        # 取自定义key for v, k in x
         if code.indexOf(',') != -1
             _ix = code.split(',').pop().split(' in')[0].trim()
 
@@ -119,7 +119,7 @@ for(var #{_key} in __mc__obj){
 
     script += "} // endFor \n"
 
-### 
+###
 # 解释 if
 ###
 parserAttrIf = (code, dom, ix)->
@@ -133,7 +133,7 @@ if( #{code} ){
    #{parseDom dom, ix + 1}
 }// endif \n"""
 
-### 
+###
 # 解释 unless
 ###
 parserAttrUnless = (code, dom, ix)->
@@ -148,12 +148,12 @@ if( !(#{code}) ){
 }// endif \n"""
 
 
-### 
+###
 # 解释属性
 ###
 parserAttr = (attribs, ix)->
     script = ''
-    
+
     attr = objectKeys attribs
     each attr, (key)->
         val = attribs[key]
@@ -178,7 +178,7 @@ parserAttr = (attribs, ix)->
                 script += "__mc__isBindObserve = __parserBinders(__mc__binderData, __mc__isBindObserve, '#{key}', __mc__attr['#{key}']);"
         else
             script += "__mc__attr['#{key}'] = '#{val}';"
-            
+
     script
 
 # 解释过滤函数
@@ -198,9 +198,9 @@ parserFormatters = (key, valName, ix)->
     funcs.splice 0, 1
 
     script = """
-    
+
 #{valName} = (function(x){
-    
+
 """
 
     each funcs, (fun)->
@@ -239,7 +239,7 @@ domToHtml = (dom)->
             html += " #{key}=\"#{val}\" "
 
     html += '/>'
-    
+
 ###
 # 解释dom结构
 ###
@@ -271,9 +271,9 @@ parseDom = (dom, ix)->
 
             each mapTree, (v)->
                  script += "#{parserFormatters v.val, v.key, ix}"
-        
+
             #console.log script
-            
+
             script += "tree.push( #{code} );"
         else
             script += "tree.push( '#{dom.data}' );"
@@ -288,7 +288,7 @@ parseDom = (dom, ix)->
     // #{domToHtml dom}
     var __mc__children_#{id} = [], __mc__attr = {}, __mc__isBindObserve = false, __mc__binderData = [];
     """
-    
+
     if dom.attribs
         # 解释 for
         if dom.attribs['mc-for']
@@ -301,7 +301,7 @@ parseDom = (dom, ix)->
         # 解释 unless
         if dom.attribs['mc-unless']
             return parserAttrUnless dom.attribs['mc-unless'], dom, ix
-        
+
         attrKeys = objectKeys dom.attribs
 
         # 解释 each-[x]
@@ -321,8 +321,8 @@ parseDom = (dom, ix)->
         script += "var __mc__new_el = new __mc_T_El('#{dom.name}', __mc__attr, __mc__children_#{id});"
         script += "__bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);"
         script += "tree.push( __mc__new_el );"
-        
-    
+
+
     script
 
 
@@ -346,12 +346,12 @@ parseTree = (tree, ix = 0, children='__mc__children_0')->
 
 
 # 将 dom 转成 js
-domToScript = (tree)->
+domToScript = (tree, options)->
 
     script = """
     'use strict';
-    
-    var mcore = require('mcore');
+
+    var mcore = require('#{options.mcoreName}');
     var __mc_T_El = mcore.virtualDom.Element;
     var __mc_T_formatters = mcore.Template.formatters;
     var __mc_T_binders = mcore.Template.binders;
@@ -382,8 +382,8 @@ domToScript = (tree)->
                 });
             }
             if(__mc__isBindObserve){
-                __mc__new_el.bindTemplate(__mc__observe); 
-                for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){ 
+                __mc__new_el.bindTemplate(__mc__observe);
+                for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){
                     var __mc_v = __mc__binderData[__mc_i];
                     __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);
                 }
@@ -398,7 +398,7 @@ domToScript = (tree)->
         else{
             var virtualDom = new __mc_T_El( 'mc-vd', {}, __mc__children_0 );
         }
-    
+
         var templateDefined = {
             'virtualDom': virtualDom
         };
@@ -407,15 +407,16 @@ domToScript = (tree)->
     """
 
     script = beautify script,
-        indent_size: 4
+        indent_size: options.formatIndentSize
 
     #console.log script
     script
 
-    
-module.exports = (html)->
+
+module.exports = (html, options = {})->
+    options.mcoreName or= 'mcore'
+    options.formatIndentSize or= 4
     _domId = 0
     domTree = htmlparser.parseDOM html
-    domToScript domTree
 
-
+    domToScript domTree, options

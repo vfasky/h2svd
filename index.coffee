@@ -11,7 +11,8 @@ h2v = require './h2v'
 
 
 module.exports = (html)->
+    query = loaderUtils.parseQuery @query
     this.cacheable() if this.cacheable
     callback = this.async()
 
-    callback null, h2v html
+    callback null, h2v html, query
