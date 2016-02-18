@@ -179,6 +179,7 @@ parserAttr = (attribs, ix)->
         else
             script += "__mc__attr['#{key}'] = '#{val}';"
 
+    script += "__mc__attr['key'] = __mc__dom_id++;"
     script
 
 # 解释过滤函数
