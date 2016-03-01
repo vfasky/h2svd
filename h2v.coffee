@@ -112,7 +112,7 @@ for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
 // for #{code}
 var __mc__obj = #{_obj} || {};
 for(var #{_key} in __mc__obj){
-    var #{_val} = __mc__obj[#{_key}] || {};
+    var #{_val} = __mc__obj[#{_key}];
     #{parseDom dom, ix + 1}
 
 """
