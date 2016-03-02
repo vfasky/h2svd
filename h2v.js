@@ -164,7 +164,7 @@ parserFormatters = function(key, valName, ix) {
     if (_varReg.test(key)) {
       return valName + " = typeof " + key + " === 'undefined' ? '" + key + "' : " + key + ";";
     } else {
-      return valName + " = " + key + ";";
+      return valName + " = " + key + " || '';";
     }
   }
   funcs = key.split(' | ');
