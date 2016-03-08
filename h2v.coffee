@@ -192,7 +192,7 @@ parserFormatters = (key, valName, ix)->
         if _varReg.test key
             return "#{valName} = typeof #{key} === 'undefined' ? '#{key}' : #{key};"
         else
-            return "#{valName} = #{key} || '';"
+            return "#{valName} = typeof #{key} === 'undefined' ? '' : #{key};"
 
     funcs = key.split ' | '
     domVal = funcs[0]
