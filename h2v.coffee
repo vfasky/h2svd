@@ -36,7 +36,7 @@ each = (arr, done)->
 ###
 # 解释 <div mc-each-v="scope.list"></div>
 ###
-parserAttrEach = (code, dom, ix, attrKey)->
+parserAttrEach = (code, dom, ix, attrKey, path)->
     # 删除 dom 的 mc-for 属性
     delete dom.attribs[attrKey]
 
@@ -56,7 +56,7 @@ var __mc__arr;
 __mc__arr = __isArray(__mc__arr) ? __mc__arr : [];
 for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
     var #{_vName} = __mc__arr[#{_ix}];
-    #{parseDom dom, ix + 1}
+    #{parseDom dom, ix + 1, path}
 }// endEach
 
 """
@@ -66,7 +66,7 @@ for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
 ###
 # 解释 <div mc-for="v, k in scope.list"></div>
 ###
-parserAttrFor = (code, dom, ix)->
+parserAttrFor = (code, dom, ix, path)->
 
     # 删除 dom 的 mc-for 属性
     delete dom.attribs['mc-for']
@@ -93,7 +93,7 @@ parserAttrFor = (code, dom, ix)->
 var __mc__arr = __isArray(#{_arr}) ? #{_arr} : [];
 for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
     var #{_vName} = __mc__arr[#{_ix}];
-    #{parseDom dom, ix + 1}
+    #{parseDom dom, ix + 1, path}
 
 """
 
@@ -113,7 +113,7 @@ for(var #{_ix}=0, len=__mc__arr.length; #{_ix} < len; #{_ix}++){
 var __mc__obj = #{_obj} || {};
 for(var #{_key} in __mc__obj){
     var #{_val} = __mc__obj[#{_key}];
-    #{parseDom dom, ix + 1}
+    #{parseDom dom, ix + 1, path}
 
 """
 
@@ -122,7 +122,7 @@ for(var #{_key} in __mc__obj){
 ###
 # 解释 if
 ###
-parserAttrIf = (code, dom, ix)->
+parserAttrIf = (code, dom, ix, path)->
     script = ''
     delete dom.attribs['mc-if']
 
@@ -130,13 +130,13 @@ parserAttrIf = (code, dom, ix)->
 
 // if #{code}
 if( #{code} ){
-   #{parseDom dom, ix + 1}
+   #{parseDom dom, ix + 1, path}
 }// endif \n"""
 
 ###
 # 解释 unless
 ###
-parserAttrUnless = (code, dom, ix)->
+parserAttrUnless = (code, dom, ix, path)->
     script = ''
     delete dom.attribs['mc-unless']
 
@@ -144,14 +144,14 @@ parserAttrUnless = (code, dom, ix)->
 
 // if #{code}
 if( !(#{code}) ){
-   #{parseDom dom, ix + 1}
+   #{parseDom dom, ix + 1, path}
 }// endif \n"""
 
 
 ###
 # 解释属性
 ###
-parserAttr = (attribs, ix)->
+parserAttr = (attribs, ix, path)->
     script = ''
 
     attr = objectKeys attribs
@@ -179,7 +179,9 @@ parserAttr = (attribs, ix)->
         else
             script += "__mc__attr['#{key}'] = '#{val}';"
 
-    script += "__mc__attr['key'] = __mc__dom_id++;"
+    #script += "__mc__attr['key'] = __mc__dom_id++;"
+    script += "__mc__attr['key'] = __getPath('#{path}');"
+
     script
 
 # 解释过滤函数
@@ -190,9 +192,9 @@ parserFormatters = (key, valName, ix)->
         return "#{valName} = '';" if key != false and !key
 
         if _varReg.test key
-            return "#{valName} = typeof #{key} === 'undefined' ? '#{key}' : #{key};"
+            return "#{valName} = typeof #{key} === 'undefined' ? ('#{key}' == 'undefined' ? '' : '#{key}') : #{key};"
         else
-            return "#{valName} = #{key} || '';"
+            return "#{valName} = #{key}; if(#{valName} == undefined){#{valName} = '';}"
 
     funcs = key.split ' | '
     domVal = funcs[0]
@@ -244,7 +246,8 @@ domToHtml = (dom)->
 ###
 # 解释dom结构
 ###
-parseDom = (dom, ix)->
+parseDom = (dom, ix, path)->
+    #console.log path
     id = _domId++
 
     # 文本处理
@@ -293,29 +296,29 @@ parseDom = (dom, ix)->
     if dom.attribs
         # 解释 for
         if dom.attribs['mc-for']
-            return parserAttrFor dom.attribs['mc-for'], dom, ix
+            return parserAttrFor dom.attribs['mc-for'], dom, ix, path
 
         # 解释 if
         if dom.attribs['mc-if']
-            return parserAttrIf dom.attribs['mc-if'], dom, ix
+            return parserAttrIf dom.attribs['mc-if'], dom, ix, path
 
         # 解释 unless
         if dom.attribs['mc-unless']
-            return parserAttrUnless dom.attribs['mc-unless'], dom, ix
+            return parserAttrUnless dom.attribs['mc-unless'], dom, ix, path
 
         attrKeys = objectKeys dom.attribs
 
         # 解释 each-[x]
         for attr in attrKeys
             if attr.indexOf('mc-each-') == 0
-                return parserAttrEach dom.attribs[attr], dom, ix, attr
+                return parserAttrEach dom.attribs[attr], dom, ix, attr, path
 
         # 解释属性
-        script += parserAttr dom.attribs, ix
+        script += parserAttr dom.attribs, ix, path
 
     # 子元素
     if dom.children and dom.children.length > 0
-        script += parseTree dom.children, ix, "__mc__children_#{id}"
+        script += parseTree dom.children, ix, "__mc__children_#{id}", path
 
     # tag 处理, 自定义组件处理
     if dom.name
@@ -328,7 +331,7 @@ parseDom = (dom, ix)->
 
 
 # 解释 dom tree
-parseTree = (tree, ix = 0, children='__mc__children_0')->
+parseTree = (tree, ix = 0, children='__mc__children_0', path = '')->
     treeId = _domId
     treeLen = 0
     script = "(function(scope, tree){ // startTree #{treeId}\n"
@@ -336,7 +339,7 @@ parseTree = (tree, ix = 0, children='__mc__children_0')->
     each tree, (dom, id)->
         # 过滤空行
         if dom.type != 'text' or (dom.type == 'text' and dom.data.trim().length > 0)
-            script += "\n #{parseDom dom, ix + 1}"
+            script += "\n #{parseDom dom, ix + 1, path + '.' + id}"
             treeLen++
 
     script += "})(scope, #{children}); // endTree #{treeId}\n"
@@ -356,6 +359,7 @@ domToScript = (tree, options)->
     var __mc_T_El = mcore.virtualDom.Element;
     var __mc_T_formatters = mcore.Template.formatters;
     var __mc_T_binders = mcore.Template.binders;
+    var __mc_T_components = mcore.Template.components;
     var __objectKeys = mcore.util.objectKeys;
     var __each = mcore.util.each;
     var __isArray = mcore.util.isArray;
@@ -364,6 +368,21 @@ domToScript = (tree, options)->
         var __mc__children_0 = [];
         var __mc__binders = {};
         var __mc__dom_id = 0;
+        var __pathMap = {};
+
+        var __getPath = function(path){
+            var key = path;
+            if(__pathMap[path] >= 0){
+                path = path + ':' + String(__pathMap[path]);
+                //console.log(path, String(__pathMap[key]));
+                __pathMap[key]++;
+                //console.log(path, __pathMap[key]);
+            }
+            else{
+                __pathMap[path] = 0;
+            }
+            return path;
+        };
 
         var __parserBinders = function(__mc__binderData, __mc__isBindObserve, key, val){
             if( __mc_T_binders.hasOwnProperty(key) ){
@@ -382,8 +401,11 @@ domToScript = (tree, options)->
                     }
                 });
             }
-            if(__mc__isBindObserve){
+            if(__mc__isBindObserve || __mc_T_components[__mc__new_el.tagName]){
                 __mc__new_el.bindTemplate(__mc__observe);
+            }
+
+            if(__mc__isBindObserve){
                 for(var __mc_i = 0, __mc_len = __mc__binderData.length; __mc_i < __mc_len; __mc_i++){
                     var __mc_v = __mc__binderData[__mc_i];
                     __mc__new_el.bindBinder(__mc_v.attrName, __mc_v.value);

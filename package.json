@@ -1,6 +1,6 @@
 {
   "name": "h2svd-loader",
-  "version": "1.0.15",
+  "version": "1.0.18",
   "description": "html to simple-virtual-dom",
   "main": "index.js",
   "dependencies": {
@@ -9,7 +9,9 @@
     "loader-utils": "^0.2.12",
     "webpack": "^1.12.10"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "coffee-script": "^1.10.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

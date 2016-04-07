@@ -6,10 +6,10 @@
  * @link http://vfasky.com
  */
 'use strict';
+
 var h2v, loaderUtils;
-
+require('coffee-script/register');
 loaderUtils = require('loader-utils');
-
 h2v = require('./h2v');
 
 module.exports = function(html) {
