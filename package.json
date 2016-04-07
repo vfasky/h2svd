@@ -1,6 +1,6 @@
 {
   "name": "h2svd-loader",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "html to simple-virtual-dom",
   "main": "index.js",
   "dependencies": {
