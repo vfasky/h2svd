@@ -84,7 +84,7 @@ parserAttrFor = (code, dom, ix, path)->
         _vName = code.split(' ')[0].replace ',', ''
 
         # 取自定义key for v, k in x
-        if code.indexOf(',') != -1
+        if code.split(' in ').shift().indexOf(',') != -1
             _ix = code.split(',').pop().split(' in')[0].trim()
 
         script = """
