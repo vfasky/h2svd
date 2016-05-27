@@ -249,7 +249,6 @@ domToHtml = (dom)->
 parseDom = (dom, ix, path)->
     #console.log path
     id = _domId++
-
     # 文本处理
     if dom.type == 'text'
         script = ''
@@ -440,6 +439,7 @@ module.exports = (html, options = {})->
     options.mcoreName or= 'mcore'
     options.formatIndentSize or= 4
     _domId = 0
-    domTree = htmlparser.parseDOM html
-
+    domTree = htmlparser.parseDOM html,
+        decodeEntities: true
+    # console.log domTree
     domToScript domTree, options
