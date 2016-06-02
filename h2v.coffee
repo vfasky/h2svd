@@ -16,6 +16,7 @@ _signReg = /\{([^}]+)\}/g
 _funReg = /(^[a-zA-Z0-9_-]+)\(([^]+)\)$/
 _varReg = /(^[a-zA-Z0-9_-]+)$/
 _strEndReg = /[^]+""$/
+_formattersArgsReg = /[^\s']+|'([^']|'[^\s])*'|"([^"]|"[^\s])*"/g
 
 # Object.keys
 objectKeys = (obj = {})->
@@ -208,9 +209,13 @@ parserFormatters = (key, valName, ix)->
 
     each funcs, (fun)->
         args = []
-        each fun.split(' '), (v)->
-            val = v.trim()
-            args.push val if val.length > 0
+        String(fun).replace _formattersArgsReg, (v)->
+            #console.log v
+            args.push v
+        #console.log fun, _formattersArgsReg
+        # each fun.split(' '), (v)->
+        #     val = v.trim()
+        #     args.push val if val.length > 0
 
         formatter = args[0]
         args[0] = 'x'
