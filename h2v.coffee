@@ -209,9 +209,15 @@ parserFormatters = (key, valName, ix)->
 
     each funcs, (fun)->
         args = []
+        isHasTag = false
         String(fun).replace _formattersArgsReg, (v)->
             #console.log v
-            args.push v
+            if v == ']' and args.length > 2
+                _attr = args.pop()
+                args[args.length - 1] = args[args.length - 1] + _attr + v
+            else
+                args.push v
+
         #console.log fun, _formattersArgsReg
         # each fun.split(' '), (v)->
         #     val = v.trim()
