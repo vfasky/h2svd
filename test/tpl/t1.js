@@ -13,6 +13,20 @@ module.exports = function(scope, __mc__observe) {
     var __mc__children_0 = [];
     var __mc__binders = {};
     var __mc__dom_id = 0;
+    var __pathMap = {};
+
+    var __getPath = function(path) {
+        var key = path;
+        if (__pathMap[path] >= 0) {
+            path = path + ':' + String(__pathMap[path]);
+            //console.log(path, String(__pathMap[key]));
+            __pathMap[key]++;
+            //console.log(path, __pathMap[key]);
+        } else {
+            __pathMap[path] = 0;
+        }
+        return path;
+    };
 
     var __parserBinders = function(__mc__binderData, __mc__isBindObserve, key, val) {
         if (__mc_T_binders.hasOwnProperty(key)) {
@@ -58,7 +72,7 @@ module.exports = function(scope, __mc__observe) {
             __mc__attr['data-id'] = '';
         }
         __mc__isBindObserve = __parserBinders(__mc__binderData, __mc__isBindObserve, 'data-id', __mc__attr['data-id']);
-        __mc__attr['key'] = __mc__dom_id++;
+        __mc__attr['key'] = __getPath('.0');
         (function(scope, tree) { // startTree 1
 
             // <ul/>
@@ -66,7 +80,7 @@ module.exports = function(scope, __mc__observe) {
                 __mc__attr = {},
                 __mc__isBindObserve = false,
                 __mc__binderData = [];
-            __mc__attr['key'] = __mc__dom_id++;
+            __mc__attr['key'] = __getPath('.0.1');
             (function(scope, tree) { // startTree 2
 
 
@@ -79,15 +93,15 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.0.1.1');
                     (function(scope, tree) { // startTree 4
 
                         var __mc__rp__key_0;
                         __mc__rp__key_0 = (function(x) {
-                            // toString
-                            if (__mc_T_formatters.hasOwnProperty('toString')) {
-                                x = __mc_T_formatters['toString'](x);
-                            } // end toString 
+                            // _
+                            if (__mc_T_formatters.hasOwnProperty('_')) {
+                                x = __mc_T_formatters['_'](x, scope.card.getTotal(v.card_type_id, 'recharge_quantity'));
+                            } // end _ 
                             return x;
                         })(v.name);
                         tree.push("             " + __mc__rp__key_0 + "         ");
@@ -105,7 +119,7 @@ module.exports = function(scope, __mc__observe) {
                 __mc__attr = {},
                 __mc__isBindObserve = false,
                 __mc__binderData = [];
-            __mc__attr['key'] = __mc__dom_id++;
+            __mc__attr['key'] = __getPath('.0.3');
             (function(scope, tree) { // startTree 6
 
 
@@ -118,7 +132,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.0.3.1');
                     (function(scope, tree) { // startTree 8
 
                         var __mc__rp__key_0;
@@ -132,6 +146,10 @@ module.exports = function(scope, __mc__observe) {
                             if (__mc_T_formatters.hasOwnProperty('toString')) {
                                 x = __mc_T_formatters['toString'](x);
                             } // end toString 
+                            // _
+                            if (__mc_T_formatters.hasOwnProperty('_')) {
+                                x = __mc_T_formatters['_'](x, 'sss ddd', scope.v(sd, sd, 'sd fsf', t['sd'], u('ss'), 'sd sfds'), 'sdf \'sdf', "dfgg 'dgg'");
+                            } // end _ 
                             return x;
                         })(k);
                         tree.push("             " + __mc__rp__key_0 + " " + __mc__rp__key_1 + "         ");
@@ -159,7 +177,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__attr['href'] = '';
                 }
                 __mc__isBindObserve = __parserBinders(__mc__binderData, __mc__isBindObserve, 'href', __mc__attr['href']);
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.0.5');
                 (function(scope, tree) { // startTree 11
 
                     var __mc__rp__key_0;
@@ -183,7 +201,7 @@ module.exports = function(scope, __mc__observe) {
             __mc__isBindObserve = false,
             __mc__binderData = [];
         __mc__attr['class'] = 'main wrapper';
-        __mc__attr['key'] = __mc__dom_id++;
+        __mc__attr['key'] = __getPath('.2');
         (function(scope, tree) { // startTree 13
 
             // <div class="shop-step" />
@@ -192,7 +210,7 @@ module.exports = function(scope, __mc__observe) {
                 __mc__isBindObserve = false,
                 __mc__binderData = [];
             __mc__attr['class'] = 'shop-step';
-            __mc__attr['key'] = __mc__dom_id++;
+            __mc__attr['key'] = __getPath('.2.1');
             (function(scope, tree) { // startTree 14
 
                 // <span class="item first" />
@@ -201,7 +219,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'item first';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.1.1');
                 var __mc__new_el = new __mc_T_El('span', __mc__attr, __mc__children_14);
                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                 tree.push(__mc__new_el);
@@ -211,7 +229,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'item second second-done0';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.1.3');
                 var __mc__new_el = new __mc_T_El('span', __mc__attr, __mc__children_15);
                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                 tree.push(__mc__new_el);
@@ -221,7 +239,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'item third third-done0';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.1.5');
                 var __mc__new_el = new __mc_T_El('span', __mc__attr, __mc__children_16);
                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                 tree.push(__mc__new_el);
@@ -235,7 +253,7 @@ module.exports = function(scope, __mc__observe) {
                 __mc__isBindObserve = false,
                 __mc__binderData = [];
             __mc__attr['class'] = 'shop-wrap';
-            __mc__attr['key'] = __mc__dom_id++;
+            __mc__attr['key'] = __getPath('.2.3');
             (function(scope, tree) { // startTree 18
 
                 // <div class="shop-head" />
@@ -244,7 +262,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'shop-head';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.1');
                 (function(scope, tree) { // startTree 19
 
                     // <h2/>
@@ -252,7 +270,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.1.1');
                     (function(scope, tree) { // startTree 20
 
                         tree.push('确认用户信息');
@@ -270,7 +288,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'user-view';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.3');
                 (function(scope, tree) { // startTree 22
 
                     // <p class="item active" />
@@ -279,7 +297,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['class'] = 'item active';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.3.1');
                     (function(scope, tree) { // startTree 23
 
                         // <label/>
@@ -287,7 +305,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr = {},
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.3.1.1');
                         (function(scope, tree) { // startTree 24
 
                             // <input class="J-addressChk rad"  type="radio"  name="order_address" />
@@ -298,7 +316,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['class'] = 'J-addressChk rad';
                             __mc__attr['type'] = 'radio';
                             __mc__attr['name'] = 'order_address';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.3.1.1.1');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_24);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -308,7 +326,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'addr';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.3.1.1.3');
                             (function(scope, tree) { // startTree 26
 
                                 tree.push('姚瑛；1592****21；369**1；430821*******1；番禺区番禺大道北 555 号天安科技园总部 2 号楼');
@@ -322,7 +340,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'oper';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.3.1.1.5');
                             (function(scope, tree) { // startTree 28
 
                                 // <a class="J-addressEdit"  href="javascript:;" />
@@ -332,7 +350,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'J-addressEdit';
                                 __mc__attr['href'] = 'javascript:;';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.3.1.1.5.1');
                                 (function(scope, tree) { // startTree 29
 
                                     tree.push('修改');
@@ -347,7 +365,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'J-addressDel';
                                 __mc__attr['href'] = 'javascript:;';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.3.1.1.5.3');
                                 (function(scope, tree) { // startTree 31
 
                                     tree.push('删除');
@@ -378,7 +396,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__binderData = [];
                 __mc__attr['id'] = 'J-userInfo';
                 __mc__attr['class'] = 'user-info shop-line hide';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.5');
                 (function(scope, tree) { // startTree 33
 
                     // <form id="J-userInfoForm"  class="ui-form" />
@@ -388,7 +406,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__binderData = [];
                     __mc__attr['id'] = 'J-userInfoForm';
                     __mc__attr['class'] = 'ui-form';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.5.1');
                     (function(scope, tree) { // startTree 34
 
                         // <div class="ui-form-item" />
@@ -397,7 +415,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'ui-form-item';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.5.1.1');
                         (function(scope, tree) { // startTree 35
 
                             // <label for=""  class="ui-label" />
@@ -407,7 +425,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['for'] = '';
                             __mc__attr['class'] = 'ui-label';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.1.1');
                             (function(scope, tree) { // startTree 36
 
                                 // <span class="ui-form-required" />
@@ -416,7 +434,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'ui-form-required';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.1.1.0');
                                 (function(scope, tree) { // startTree 37
 
                                     tree.push('*');
@@ -424,7 +442,7 @@ module.exports = function(scope, __mc__observe) {
                                 var __mc__new_el = new __mc_T_El('span', __mc__attr, __mc__children_36);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
-                                tree.push('姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：');
+                                tree.push('姓       名：');
                             })(scope, __mc__children_35); // endTree 36
                             var __mc__new_el = new __mc_T_El('label', __mc__attr, __mc__children_35);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
@@ -438,7 +456,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['type'] = 'text';
                             __mc__attr['name'] = 'full_name';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.1.3');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_39);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -448,7 +466,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'ui-form-explain';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.1.5');
                             var __mc__new_el = new __mc_T_El('div', __mc__attr, __mc__children_40);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -462,7 +480,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'ui-form-item ui-form-item-error';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.5.1.3');
                         (function(scope, tree) { // startTree 42
 
                             // <label for=""  class="ui-label" />
@@ -472,7 +490,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['for'] = '';
                             __mc__attr['class'] = 'ui-label';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.3.1');
                             (function(scope, tree) { // startTree 43
 
                                 // <span class="ui-form-required" />
@@ -481,7 +499,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'ui-form-required';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.3.1.0');
                                 (function(scope, tree) { // startTree 44
 
                                     tree.push('*');
@@ -503,7 +521,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['type'] = 'text';
                             __mc__attr['name'] = 'mobile';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.3.3');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_46);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -513,7 +531,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'ui-form-explain';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.3.5');
                             (function(scope, tree) { // startTree 48
 
                                 tree.push('您已经是软件用户，请联系服务人员进行二次购买，此处暂不支持软件用户二次购买。');
@@ -531,7 +549,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'ui-form-item';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.5.1.5');
                         (function(scope, tree) { // startTree 50
 
                             // <label for=""  class="ui-label" />
@@ -541,7 +559,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['for'] = '';
                             __mc__attr['class'] = 'ui-label';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.5.1');
                             (function(scope, tree) { // startTree 51
 
                                 // <span class="ui-form-required" />
@@ -550,7 +568,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'ui-form-required';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.5.1.0');
                                 (function(scope, tree) { // startTree 52
 
                                     tree.push('*');
@@ -558,7 +576,7 @@ module.exports = function(scope, __mc__observe) {
                                 var __mc__new_el = new __mc_T_El('span', __mc__attr, __mc__children_51);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
-                                tree.push('QQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：');
+                                tree.push('QQ     号：');
                             })(scope, __mc__children_50); // endTree 51
                             var __mc__new_el = new __mc_T_El('label', __mc__attr, __mc__children_50);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
@@ -572,7 +590,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['type'] = 'text';
                             __mc__attr['name'] = 'qq_code';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.5.3');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_54);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -582,7 +600,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'ui-form-explain';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.5.5');
                             var __mc__new_el = new __mc_T_El('div', __mc__attr, __mc__children_55);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -596,7 +614,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'ui-form-item ui-form-item-error';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.5.1.7');
                         (function(scope, tree) { // startTree 57
 
                             // <label for=""  class="ui-label" />
@@ -606,7 +624,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['for'] = '';
                             __mc__attr['class'] = 'ui-label';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.7.1');
                             (function(scope, tree) { // startTree 58
 
                                 // <span class="ui-form-required" />
@@ -615,7 +633,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'ui-form-required';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.7.1.0');
                                 (function(scope, tree) { // startTree 59
 
                                     tree.push('*');
@@ -637,7 +655,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['type'] = 'text';
                             __mc__attr['name'] = 'id_card';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.7.3');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_61);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -647,7 +665,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'ui-form-explain';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.7.5');
                             (function(scope, tree) { // startTree 63
 
                                 tree.push('您已经是软件用户，请联系服务人员进行二次购买，此处暂不支持软件用户二次购买。');
@@ -666,7 +684,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__binderData = [];
                         __mc__attr['id'] = 'J-userAddress';
                         __mc__attr['class'] = 'ui-form-item';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.5.1.9');
                         (function(scope, tree) { // startTree 65
 
                             // <label class="ui-label" />
@@ -675,7 +693,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'ui-label';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.9.1');
                             (function(scope, tree) { // startTree 66
 
                                 // <span class="ui-form-required" />
@@ -684,7 +702,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'ui-form-required';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.1.0');
                                 (function(scope, tree) { // startTree 67
 
                                     tree.push('*');
@@ -704,7 +722,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['name'] = 'province';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.9.3');
                             (function(scope, tree) { // startTree 70
 
                                 // <option value="" />
@@ -713,7 +731,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.3.1');
                                 (function(scope, tree) { // startTree 71
 
                                     tree.push('请选择');
@@ -727,7 +745,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '1';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.3.3');
                                 (function(scope, tree) { // startTree 73
 
                                     tree.push('广东');
@@ -741,7 +759,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '2';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.3.5');
                                 (function(scope, tree) { // startTree 75
 
                                     tree.push('湖南');
@@ -760,7 +778,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['name'] = 'city';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.9.5');
                             (function(scope, tree) { // startTree 77
 
                                 // <option value="" />
@@ -769,7 +787,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.5.1');
                                 (function(scope, tree) { // startTree 78
 
                                     tree.push('请选择');
@@ -783,7 +801,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '1';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.5.3');
                                 (function(scope, tree) { // startTree 80
 
                                     tree.push('广州');
@@ -797,7 +815,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '2';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.5.5');
                                 (function(scope, tree) { // startTree 82
 
                                     tree.push('深圳');
@@ -816,7 +834,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['name'] = 'district';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.9.7');
                             (function(scope, tree) { // startTree 84
 
                                 // <option value="" />
@@ -825,7 +843,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.7.1');
                                 (function(scope, tree) { // startTree 85
 
                                     tree.push('请选择');
@@ -839,7 +857,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '1';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.7.3');
                                 (function(scope, tree) { // startTree 87
 
                                     tree.push('番禺');
@@ -853,7 +871,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
                                 __mc__attr['value'] = '2';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.9.7.5');
                                 (function(scope, tree) { // startTree 89
 
                                     tree.push('天河');
@@ -874,7 +892,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['type'] = 'text';
                             __mc__attr['name'] = 'street';
                             __mc__attr['required'] = '';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.9.9');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_90);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -888,7 +906,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'ui-form-item';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.5.1.11');
                         (function(scope, tree) { // startTree 92
 
                             // <label/>
@@ -896,7 +914,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr = {},
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.11.1');
                             (function(scope, tree) { // startTree 93
 
                                 // <input class="save-chk"  type="checkbox"  name="save_default"  required="" />
@@ -908,7 +926,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr['type'] = 'checkbox';
                                 __mc__attr['name'] = 'save_default';
                                 __mc__attr['required'] = '';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.11.1.1');
                                 var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_93);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
@@ -923,7 +941,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'sub-btn';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.5.1.11.3');
                             (function(scope, tree) { // startTree 96
 
                                 // <input class="btn btn-primary"  type="submit"  value="确定" />
@@ -934,7 +952,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr['class'] = 'btn btn-primary';
                                 __mc__attr['type'] = 'submit';
                                 __mc__attr['value'] = '确定';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.5.1.11.3.0');
                                 var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_96);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
@@ -960,7 +978,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'shop-head';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.7');
                 (function(scope, tree) { // startTree 98
 
                     // <h2/>
@@ -968,7 +986,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.7.1');
                     (function(scope, tree) { // startTree 99
 
                         tree.push('确定订单信息');
@@ -987,7 +1005,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__binderData = [];
                 __mc__attr['id'] = 'J-orderInfo';
                 __mc__attr['class'] = 'order-info';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.9');
                 (function(scope, tree) { // startTree 101
 
                     // <table class="ui-table ui-table-center" />
@@ -996,7 +1014,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['class'] = 'ui-table ui-table-center';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.9.1');
                     (function(scope, tree) { // startTree 102
 
                         // <thead/>
@@ -1004,7 +1022,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr = {},
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.9.1.1');
                         (function(scope, tree) { // startTree 103
 
                             // <tr/>
@@ -1012,7 +1030,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr = {},
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.9.1.1.1');
                             (function(scope, tree) { // startTree 104
 
                                 // <th/>
@@ -1020,7 +1038,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.1.1.1');
                                 (function(scope, tree) { // startTree 105
 
                                     tree.push('商品名称');
@@ -1033,7 +1051,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.1.1.3');
                                 (function(scope, tree) { // startTree 107
 
                                     tree.push('所含服务');
@@ -1046,7 +1064,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.1.1.5');
                                 (function(scope, tree) { // startTree 109
 
                                     tree.push('单价/使用期限');
@@ -1059,7 +1077,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.1.1.7');
                                 (function(scope, tree) { // startTree 111
 
                                     tree.push('数量');
@@ -1072,7 +1090,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.1.1.9');
                                 (function(scope, tree) { // startTree 113
 
                                     tree.push('合计');
@@ -1085,7 +1103,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.1.1.11');
                                 (function(scope, tree) { // startTree 115
 
                                     tree.push('操作');
@@ -1106,7 +1124,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr = {},
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.9.1.3');
                         (function(scope, tree) { // startTree 117
 
                             // <tr/>
@@ -1114,7 +1132,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr = {},
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.9.1.3.1');
                             (function(scope, tree) { // startTree 118
 
                                 // <td/>
@@ -1122,7 +1140,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.3.1.1');
                                 (function(scope, tree) { // startTree 119
 
                                     tree.push('巡航版');
@@ -1135,7 +1153,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.3.1.3');
                                 (function(scope, tree) { // startTree 121
 
                                     tree.push('巡航版及经传手机版');
@@ -1148,7 +1166,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.3.1.5');
                                 (function(scope, tree) { // startTree 123
 
                                     tree.push('18800元');
@@ -1161,7 +1179,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.3.1.7');
                                 (function(scope, tree) { // startTree 125
 
                                     tree.push('1');
@@ -1174,7 +1192,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.3.1.9');
                                 (function(scope, tree) { // startTree 127
 
                                     tree.push('18800元');
@@ -1187,7 +1205,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__attr = {},
                                     __mc__isBindObserve = false,
                                     __mc__binderData = [];
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.3.1.11');
                                 (function(scope, tree) { // startTree 129
 
                                     // <a class="J-delGoodsBtn"  href="javascript:;" />
@@ -1197,7 +1215,7 @@ module.exports = function(scope, __mc__observe) {
                                         __mc__binderData = [];
                                     __mc__attr['class'] = 'J-delGoodsBtn';
                                     __mc__attr['href'] = 'javascript:;';
-                                    __mc__attr['key'] = __mc__dom_id++;
+                                    __mc__attr['key'] = __getPath('.2.3.9.1.3.1.11.0');
                                     (function(scope, tree) { // startTree 130
 
                                         tree.push('删除');
@@ -1222,7 +1240,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr = {},
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.9.1.5');
                         (function(scope, tree) { // startTree 132
 
                             // <tr/>
@@ -1230,7 +1248,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr = {},
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.9.1.5.1');
                             (function(scope, tree) { // startTree 133
 
                                 // <td class="total"  colspan="6" />
@@ -1240,7 +1258,7 @@ module.exports = function(scope, __mc__observe) {
                                     __mc__binderData = [];
                                 __mc__attr['class'] = 'total';
                                 __mc__attr['colspan'] = '6';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.9.1.5.1.1');
                                 (function(scope, tree) { // startTree 134
 
                                     // <span class="red2" />
@@ -1249,7 +1267,7 @@ module.exports = function(scope, __mc__observe) {
                                         __mc__isBindObserve = false,
                                         __mc__binderData = [];
                                     __mc__attr['class'] = 'red2';
-                                    __mc__attr['key'] = __mc__dom_id++;
+                                    __mc__attr['key'] = __getPath('.2.3.9.1.5.1.1.1');
                                     (function(scope, tree) { // startTree 135
 
                                         tree.push('备注：如已经是软件用户，请联系服务人员进行二次购买，此处暂不支持软件用户二次购买。');
@@ -1263,7 +1281,7 @@ module.exports = function(scope, __mc__observe) {
                                         __mc__isBindObserve = false,
                                         __mc__binderData = [];
                                     __mc__attr['class'] = 'num';
-                                    __mc__attr['key'] = __mc__dom_id++;
+                                    __mc__attr['key'] = __getPath('.2.3.9.1.5.1.1.3');
                                     (function(scope, tree) { // startTree 137
 
                                         tree.push('总计：');
@@ -1273,7 +1291,7 @@ module.exports = function(scope, __mc__observe) {
                                             __mc__isBindObserve = false,
                                             __mc__binderData = [];
                                         __mc__attr['class'] = 'red2';
-                                        __mc__attr['key'] = __mc__dom_id++;
+                                        __mc__attr['key'] = __getPath('.2.3.9.1.5.1.1.3.1');
                                         (function(scope, tree) { // startTree 139
 
                                             tree.push('18800');
@@ -1312,7 +1330,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'shop-head';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.11');
                 (function(scope, tree) { // startTree 142
 
                     // <h2/>
@@ -1320,7 +1338,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.11.1');
                     (function(scope, tree) { // startTree 143
 
                         tree.push('发票信息 ');
@@ -1331,7 +1349,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__binderData = [];
                         __mc__attr['class'] = 'J-invoiceEditBtn invoice-edit-btn hide';
                         __mc__attr['href'] = 'javascript:;';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.11.1.1');
                         (function(scope, tree) { // startTree 145
 
                             // <i class="icon-comm icon-edit" />
@@ -1340,10 +1358,10 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'icon-comm icon-edit';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.11.1.1.0');
                             (function(scope, tree) { // startTree 146
 
-                                tree.push('&#xe607;');
+                                tree.push('');
                             })(scope, __mc__children_145); // endTree 146
                             var __mc__new_el = new __mc_T_El('i', __mc__attr, __mc__children_145);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
@@ -1367,7 +1385,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'J-invoiceInfo invoice-info shop-line';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.13');
                 (function(scope, tree) { // startTree 149
 
                     // <a class="J-isInvoiceBtn btn btn-primary"  href="javascript:;" />
@@ -1377,7 +1395,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__binderData = [];
                     __mc__attr['class'] = 'J-isInvoiceBtn btn btn-primary';
                     __mc__attr['href'] = 'javascript:;';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.13.1');
                     (function(scope, tree) { // startTree 150
 
                         tree.push('我需要发票');
@@ -1392,7 +1410,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__binderData = [];
                     __mc__attr['class'] = 'J-noInvoiceBtn btn btn-primary';
                     __mc__attr['href'] = 'javascript:;';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.13.3');
                     (function(scope, tree) { // startTree 152
 
                         tree.push('不需要发票');
@@ -1410,7 +1428,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'J-invoiceView invoice-view shop-line hide';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.15');
                 (function(scope, tree) { // startTree 154
 
                     // <p/>
@@ -1418,7 +1436,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.15.1');
                     (function(scope, tree) { // startTree 155
 
                         tree.push('发票类型：普通发票');
@@ -1431,7 +1449,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.15.3');
                     (function(scope, tree) { // startTree 157
 
                         tree.push('发票抬头：个人');
@@ -1444,7 +1462,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__attr = {},
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.15.5');
                     (function(scope, tree) { // startTree 159
 
                         tree.push('发票内容：经传多赢证券交易辅助决策软件');
@@ -1458,7 +1476,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['class'] = 'tips';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.15.7');
                     (function(scope, tree) { // startTree 161
 
                         tree.push('备注：发票将于次月寄往各地办事处，请联系办事处领取，如有特殊情况请致电：400-700-3809');
@@ -1476,7 +1494,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'J-isInvoiceBox invoice-view shop-line hide';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.17');
                 (function(scope, tree) { // startTree 163
 
                     // <form id="J-invoiceForm" />
@@ -1485,7 +1503,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['id'] = 'J-invoiceForm';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.17.1');
                     (function(scope, tree) { // startTree 164
 
                         // <p/>
@@ -1493,7 +1511,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr = {},
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.17.1.1');
                         (function(scope, tree) { // startTree 165
 
                             tree.push('                     发票类型：                     ');
@@ -1503,7 +1521,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'type';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.1.1');
                             (function(scope, tree) { // startTree 167
 
                                 // <input class="J-invoiceType"  type="radio"  name="invoice_type"  checked="checked"  value="1" />
@@ -1516,7 +1534,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr['name'] = 'invoice_type';
                                 __mc__attr['checked'] = 'checked';
                                 __mc__attr['value'] = '1';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.17.1.1.1.1');
                                 var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_167);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
@@ -1531,7 +1549,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'type';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.1.3');
                             (function(scope, tree) { // startTree 170
 
                                 // <input class="J-invoiceType"  type="radio"  name="invoice_type"  value="2" />
@@ -1543,7 +1561,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr['type'] = 'radio';
                                 __mc__attr['name'] = 'invoice_type';
                                 __mc__attr['value'] = '2';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.17.1.1.3.1');
                                 var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_170);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
@@ -1562,7 +1580,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'J-comInvoiceEdit';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.17.1.3');
                         (function(scope, tree) { // startTree 173
 
                             // <p/>
@@ -1570,7 +1588,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr = {},
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.3.1');
                             (function(scope, tree) { // startTree 174
 
                                 tree.push('                         发票抬头：                         ');
@@ -1582,7 +1600,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr['class'] = 'J-invoiceName name';
                                 __mc__attr['name'] = 'invoice_name';
                                 __mc__attr['required'] = '';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.17.1.3.1.1');
                                 (function(scope, tree) { // startTree 176
 
                                     // <option value="1" />
@@ -1591,7 +1609,7 @@ module.exports = function(scope, __mc__observe) {
                                         __mc__isBindObserve = false,
                                         __mc__binderData = [];
                                     __mc__attr['value'] = '1';
-                                    __mc__attr['key'] = __mc__dom_id++;
+                                    __mc__attr['key'] = __getPath('.2.3.17.1.3.1.1.1');
                                     (function(scope, tree) { // startTree 177
 
                                         tree.push('个人');
@@ -1605,7 +1623,7 @@ module.exports = function(scope, __mc__observe) {
                                         __mc__isBindObserve = false,
                                         __mc__binderData = [];
                                     __mc__attr['value'] = '2';
-                                    __mc__attr['key'] = __mc__dom_id++;
+                                    __mc__attr['key'] = __getPath('.2.3.17.1.3.1.1.3');
                                     (function(scope, tree) { // startTree 179
 
                                         tree.push('单位');
@@ -1626,7 +1644,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr['type'] = 'text';
                                 __mc__attr['name'] = 'unit_name';
                                 __mc__attr['value'] = '广州经传多赢投资咨询有限公司';
-                                __mc__attr['key'] = __mc__dom_id++;
+                                __mc__attr['key'] = __getPath('.2.3.17.1.3.1.3');
                                 var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_180);
                                 __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                                 tree.push(__mc__new_el);
@@ -1639,7 +1657,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__attr = {},
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.3.3');
                             (function(scope, tree) { // startTree 182
 
                                 tree.push('发票内容：经传多赢证券交易辅助决策软件');
@@ -1653,7 +1671,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__isBindObserve = false,
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'tips';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.3.5');
                             (function(scope, tree) { // startTree 184
 
                                 tree.push('备注：发票将于次月寄往各地办事处，请联系办事处领取，如有特殊情况请致电：400-700-3809');
@@ -1671,7 +1689,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'J-taxInvoiceEdit tips hide';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.17.1.5');
                         (function(scope, tree) { // startTree 186
 
                             tree.push('备注：如您需要开通增值税专用发票，请致电400-700-3809');
@@ -1685,7 +1703,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'btns';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.17.1.7');
                         (function(scope, tree) { // startTree 188
 
                             // <input class="btn btn-primary"  type="submit"  value="保存发票信息" />
@@ -1696,7 +1714,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__attr['class'] = 'btn btn-primary';
                             __mc__attr['type'] = 'submit';
                             __mc__attr['value'] = '保存发票信息';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.7.1');
                             var __mc__new_el = new __mc_T_El('input', __mc__attr, __mc__children_188);
                             __bindBinder(__mc__new_el, __mc__attr, __mc__isBindObserve, __mc__binderData);
                             tree.push(__mc__new_el);
@@ -1707,7 +1725,7 @@ module.exports = function(scope, __mc__observe) {
                                 __mc__binderData = [];
                             __mc__attr['class'] = 'J-noInvoicebtn btn btn-primary';
                             __mc__attr['href'] = 'javascript:;';
-                            __mc__attr['key'] = __mc__dom_id++;
+                            __mc__attr['key'] = __getPath('.2.3.17.1.7.3');
                             (function(scope, tree) { // startTree 190
 
                                 tree.push('暂不需要发票');
@@ -1733,7 +1751,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'J-noInvoiceBox invoice-view shop-line hide';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.19');
                 (function(scope, tree) { // startTree 192
 
                     // <p class="tips" />
@@ -1742,7 +1760,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['class'] = 'tips';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.19.1');
                     (function(scope, tree) { // startTree 193
 
                         tree.push('不需要发票');
@@ -1760,7 +1778,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__isBindObserve = false,
                     __mc__binderData = [];
                 __mc__attr['class'] = 'total-info';
-                __mc__attr['key'] = __mc__dom_id++;
+                __mc__attr['key'] = __getPath('.2.3.21');
                 (function(scope, tree) { // startTree 195
 
                     // <p class="num" />
@@ -1769,7 +1787,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['class'] = 'num';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.21.1');
                     (function(scope, tree) { // startTree 196
 
                         tree.push('商品金额 18800 元');
@@ -1783,7 +1801,7 @@ module.exports = function(scope, __mc__observe) {
                         __mc__isBindObserve = false,
                         __mc__binderData = [];
                     __mc__attr['class'] = 'all';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.21.3');
                     (function(scope, tree) { // startTree 198
 
                         tree.push('您需为订单支付 总共：');
@@ -1793,7 +1811,7 @@ module.exports = function(scope, __mc__observe) {
                             __mc__isBindObserve = false,
                             __mc__binderData = [];
                         __mc__attr['class'] = 'red2';
-                        __mc__attr['key'] = __mc__dom_id++;
+                        __mc__attr['key'] = __getPath('.2.3.21.3.1');
                         (function(scope, tree) { // startTree 200
 
                             tree.push('18800');
@@ -1814,7 +1832,7 @@ module.exports = function(scope, __mc__observe) {
                     __mc__attr['id'] = 'J-orderSubmit';
                     __mc__attr['class'] = 'order-submit btn btn-primary btn-lg';
                     __mc__attr['href'] = 'javascript:;';
-                    __mc__attr['key'] = __mc__dom_id++;
+                    __mc__attr['key'] = __getPath('.2.3.21.5');
                     (function(scope, tree) { // startTree 203
 
                         tree.push('提交订单');

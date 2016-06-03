@@ -208,23 +208,71 @@ parserFormatters = (key, valName, ix)->
 """
 
     each funcs, (fun)->
+        fun = String fun
         args = []
         isHasTag = false
-        String(fun).replace _formattersArgsReg, (v)->
-            #console.log v
-            if v == ']' and args.length > 2
-                _attr = args.pop()
-                args[args.length - 1] = args[args.length - 1] + _attr + v
-            else
-                args.push v
 
-        #console.log fun, _formattersArgsReg
-        # each fun.split(' '), (v)->
-        #     val = v.trim()
-        #     args.push val if val.length > 0
+        if fun.indexOf('(') == -1
+            fun.replace _formattersArgsReg, (v)->
+                #console.log v
+                if v == ']' and args.length > 2
+                    _attr = args.pop()
+                    args[args.length - 1] = args[args.length - 1] + _attr + v
+
+                else
+                    args.push v
+        else
+
+            each fun.split(' '), (v)->
+                val = v.trim()
+                if val.length > 0
+                    args.push val.replace(/\\'/g, '__00__').replace /\\"/g, '__01__'
+
+
+            # 处理 'xx xx'
+            mIx = -1
+            each args, (v, k)->
+                if mIx == -1 and v.indexOf("'") == 0 and v.slice(1).indexOf("'") == -1
+                    mIx = k
+                    #console.log "mIx %s, %s", mIx, v
+
+                else if mIx != -1 and v.indexOf("'") != -1
+                    #console.log "合并 %s, %s", mIx, v
+                    strVal = []
+                    for i in [mIx...(k+1)]
+                        strVal.push args[i]
+                        args[i] = ''
+                    args[mIx] = strVal.join ' '
+                    mIx = -1
+
+            mIx = -1
+            each args, (v, k)->
+                if mIx == -1 and v.indexOf('"') == 0 and v.slice(1).indexOf('"') == -1
+                    mIx = k
+                    #console.log "mIx %s, %s", mIx, v
+
+                else if mIx != -1 and v.indexOf('"') != -1
+                    #console.log "合并 %s, %s", mIx, v
+                    strVal = []
+                    for i in [mIx...(k+1)]
+                        strVal.push args[i]
+                        args[i] = ''
+                    args[mIx] = strVal.join ' '
+                    mIx = -1
+
+
+            args = args.filter (v)->
+                v.length > 0
+            .map (v)->
+                v = v.replace(/__00__/g, "\\'").replace /__01__/g, '\\"'
+                v = v.slice(0, v.length - 1) if v.slice(-1) == ','
+                v
+
 
         formatter = args[0]
         args[0] = 'x'
+        # console.log fun
+        # console.log args
 
         script += """
 // #{formatter}

@@ -1,12 +1,12 @@
 <div mc-data-id="scope.id">
     <ul>
         <li mc-for="v in scope.list">
-            {v.name | toString}
+            {v.name | _ scope.card.getTotal(v.card_type_id, 'recharge_quantity')}
         </li>
     </ul>
     <ul>
         <li mc-for="v, k in scope.list">
-            {v.name} {k | toString}
+            {v.name} {k | toString | _ 'sss ddd' scope.v(sd, sd, 'sd fsf', t['sd'], u('ss'), 'sd sfds') 'sdf \'sdf' "dfgg 'dgg'"}
         </li>
     </ul>
 
@@ -176,7 +176,7 @@
         <div class="total-info">
             <p class="num">商品金额 18800 元</p>
             <p class="all">您需为订单支付 总共：<b class="red2">18800</b> 元</p>
-            <a id="J-orderSubmit" class="order-submit btn btn-primary btn-lg" href="javascript:;">提交订单</a> 
+            <a id="J-orderSubmit" class="order-submit btn btn-primary btn-lg" href="javascript:;">提交订单</a>
         </div>
     </div>
 </div>
