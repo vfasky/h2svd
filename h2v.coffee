@@ -160,6 +160,7 @@ parserAttr = (attribs, ix, path)->
         val = attribs[key]
         if key.indexOf('mc-') == 0
             key = key.replace 'mc-', ''
+
             if key.indexOf('on-') == 0
                 fun = val.trim()
                 if _funReg.test fun
@@ -174,7 +175,6 @@ parserAttr = (attribs, ix, path)->
                     script += "__mc__attr['#{key}'] = '#{val}';"
             else
                 #parserFormatters dom.attribs[attr]
-
                 script += "#{parserFormatters val, "__mc__attr['#{key}']", ix}"
                 script += "__mc__isBindObserve = __parserBinders(__mc__binderData, __mc__isBindObserve, '#{key}', __mc__attr['#{key}']);"
         else
@@ -189,12 +189,28 @@ parserAttr = (attribs, ix, path)->
 # 'test' | toNumber | toFixed 2 =>
 parserFormatters = (key, valName, ix)->
     key = key.trim()
+
     if key.indexOf('|') == -1
         return "#{valName} = '';" if key != false and !key
 
         if _varReg.test key
-            return "#{valName} = typeof #{key} === 'undefined' ? ('#{key}' == 'undefined' ? '' : '#{key}') : #{key};"
+            # code = "#{valName} = (typeof #{key} === 'undefined') ? ('#{key}' == 'undefined' ? '' : '#{key}') : #{key};"
+
+            code = """
+                if(typeof #{key} === 'undefined'){
+                    #{valName} = '#{key}' == 'undefined' ? '' : '#{key}';
+                }
+                else if(#{key} instanceof window.Element){
+                    #{valName} = '#{key}';
+                }
+                else{
+                    #{valName} = #{key};
+                }
+            """
+
+            return code
         else
+
             return "#{valName} = #{key}; if(#{valName} == undefined){#{valName} = '';}"
 
     funcs = key.split ' | '
